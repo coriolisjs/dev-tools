@@ -28,7 +28,6 @@
     "debug"
   ],
   "main": "dist/cjs/index.js",
-  "type": "module",
   "sideEffects": false,
   "module": "dist/esm/index.js",
   "files": [
