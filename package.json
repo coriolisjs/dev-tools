@@ -43,6 +43,7 @@
     "start:dev": "sirv public --single --dev",
     "lint": "eslint .",
     "pretty": "prettier './**/{*.{js?(on),md,?(s)css,html},.*.{js?(on),md,?(s)css,html}}' --write && eslint . --fix",
+    "upgrade": "npm outdated --parseable --depth=0 | cut -d: -f4 | xargs npm install",
     "prepublishOnly": "npm run lint && npm outdated && npm run clear && npm run build && git tag ${VERSION} && git push origin ${VERSION}",
     "publish:local": "VERSION=${npm_package_version}-local npm publish --registry http://localhost:4873",
     "publish:npm": "VERSION=${npm_package_version} npm publish --registry https://registry.npmjs.org --access public"
