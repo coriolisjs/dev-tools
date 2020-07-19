@@ -106,7 +106,7 @@
   >
     <select
       class="timing-select"
-      on:blur={selectTimingType}
+      on:change={selectTimingType}
     >
       <option value="deltaN" selected={$selectedTimingType$ === 'deltaN'}>+{item.deltaN}ms</option>
       <option value="delta0" selected={$selectedTimingType$ === 'delta0'}>+{item.delta0}ms</option>
