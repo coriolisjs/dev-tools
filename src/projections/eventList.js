@@ -7,6 +7,8 @@ import {
   storeEvent,
   projectionCalled,
   aggregatorCreated,
+  storeEnded,
+  storeError,
 } from '../events'
 
 import { currentStoreId } from './currentStoreId'
@@ -80,6 +82,32 @@ const mapAggregatorCreatedToEventListItem = (
     firstListItem,
   })
 
+const mapStoreEndedToEventListItem = (event, previousListItem, firstListItem) =>
+  eventListItem({
+    title: `Store ended`,
+    payload: '',
+    isError: false,
+    isPastEvent: false,
+    projectionCalls: [],
+
+    timestamp: event.meta.timestamp,
+    previousListItem,
+    firstListItem,
+  })
+
+const mapStoreErrorToEventListItem = (event, previousListItem, firstListItem) =>
+  eventListItem({
+    title: `Store error`,
+    payload: event.payload.error,
+    isError: true,
+    isPastEvent: false,
+    projectionCalls: [],
+
+    timestamp: event.meta.timestamp,
+    previousListItem,
+    firstListItem,
+  })
+
 const addProjectionCall = (
   lastEventListItem,
   args,
@@ -100,7 +128,13 @@ const addProjectionCall = (
 
 const fullEventList = ({ useState, useEvent, useProjection }) => (
   useState({}),
-  useEvent(projectionCalled, storeEvent, aggregatorCreated),
+  useEvent(
+    projectionCalled,
+    storeEvent,
+    aggregatorCreated,
+    storeEnded,
+    storeError,
+  ),
   useProjection(fullProjectionsIndex),
   (lists, event, projectionIndexes) => {
     const {
@@ -130,6 +164,28 @@ const fullEventList = ({ useState, useEvent, useProjection }) => (
         newEventlist = unshift(
           eventList,
           mapAggregatorCreatedToEventListItem(
+            event,
+            first(eventList),
+            last(eventList),
+          ),
+        )
+        break
+
+      case storeEnded.toString():
+        newEventlist = unshift(
+          eventList,
+          mapStoreEndedToEventListItem(
+            event,
+            first(eventList),
+            last(eventList),
+          ),
+        )
+        break
+
+      case storeError.toString():
+        newEventlist = unshift(
+          eventList,
+          mapStoreErrorToEventListItem(
             event,
             first(eventList),
             last(eventList),
