@@ -1,4 +1,5 @@
 import { Subject } from 'rxjs'
+import { map } from 'rxjs/operators'
 
 import {
   createAggregator,
@@ -13,10 +14,12 @@ import {
   projectionSetup,
   projectionCalled,
   aggregatorCalled,
+  commandExecuted,
   storeError,
 } from './events'
 import { lossless } from './lib/rx/operator/lossless'
 import { withValueGetter } from './lib/object/valueGetter'
+import { asObservable } from './lib/rx/asObservable'
 
 let lastStoreId = 0
 const getStoreId = () => ++lastStoreId
@@ -146,6 +149,48 @@ const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
   return withValueGetter(wrappedAggregator, aggregator.getValue)
 }
 
+const wrapCommand = (storeId, trackingSubject, command) => (commandAPI) => {
+  trackingSubject.next(commandExecuted({ storeId, command }))
+
+  return asObservable(command(commandAPI)).pipe(
+    map((event) => {
+      if (typeof event === 'function') {
+        return wrapCommand(event)
+      }
+
+      const meta = event.meta || {}
+      return {
+        ...event,
+        meta: {
+          ...meta,
+          fromCommand: [...(meta.fromCommand || []), command],
+        },
+      }
+    }),
+  )
+}
+
+const wrapEffectAPI = (storeId, trackingSubject, effectAPI) => {
+  const doWrapEffect = wrapEffect(storeId, trackingSubject)
+
+  return {
+    ...effectAPI,
+    addEffect: (effect) => effectAPI.addEffect(doWrapEffect(effect)),
+    dispatch: (event) => {
+      if (typeof event === 'function') {
+        return effectAPI.dispatch(wrapCommand(storeId, trackingSubject, event))
+      }
+      return effectAPI.dispatch(event)
+    },
+  }
+}
+
+const wrapEffect = (storeId, trackingSubject) => (effect) => {
+  return (effectAPI) => {
+    return effect(wrapEffectAPI(storeId, trackingSubject, effectAPI))
+  }
+}
+
 export const wrapCoriolisOptions = withSimpleStoreSignature(
   (options, ...effects) => {
     const storeId = getStoreId()
@@ -157,7 +202,10 @@ export const wrapCoriolisOptions = withSimpleStoreSignature(
       aggregatorEvents.pipe(lossless),
     )
 
-    options.effects = [devtoolsEffect, ...effects]
+    options.effects = [
+      devtoolsEffect,
+      ...effects.map(wrapEffect(storeId, aggregatorEvents)),
+    ]
 
     options.aggregatorFactory = createAggregatorFactory(
       createTrackingAggregatorFactory(storeId, aggregatorEvents),

@@ -14,6 +14,7 @@
   const selectEventListItem = createDispatch(() => selectedEventListItem(item))
 </script>
 
+<!-- svelte-ignore a11y-no-onchange -->
 <style lang="scss">
   .eventListItem {
     display: flex;
@@ -42,6 +43,15 @@
 
     &.isError {
       color: #f66578;
+    }
+
+    &.isCommand {
+      background: #456847;
+      padding: .1em .5em 0;
+
+      &.isSelected {
+        background-color: rgba(24, 196, 159, 0.6);
+      }
     }
 
     &.isConnection {
@@ -93,6 +103,7 @@
   class:isEven={!(item.rank % 2)}
   class:isPastEvent={item.isPastEvent}
   class:isError={item.error}
+  class:isCommand={item.isCommand}
   class:isConnection={item.type && item.type.includes('Init projection')}
   class:isSelected={selected}
   on:click={selectEventListItem}
