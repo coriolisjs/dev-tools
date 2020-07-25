@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs'
-import { map } from 'rxjs/operators'
+import { map, tap } from 'rxjs/operators'
 
 import {
   createAggregator,
@@ -16,6 +16,7 @@ import {
   aggregatorCalled,
   commandExecuted,
   storeError,
+  commandCompleted,
 } from './events'
 import { lossless } from './lib/rx/operator/lossless'
 import { withValueGetter } from './lib/object/valueGetter'
@@ -153,6 +154,10 @@ const wrapCommand = (storeId, trackingSubject, command) => (commandAPI) => {
   trackingSubject.next(commandExecuted({ storeId, command }))
 
   return asObservable(command(commandAPI)).pipe(
+    tap({
+      complete: () =>
+        trackingSubject.next(commandCompleted({ storeId, command })),
+    }),
     map((event) => {
       if (typeof event === 'function') {
         return wrapCommand(event)

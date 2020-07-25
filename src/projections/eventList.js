@@ -10,6 +10,7 @@ import {
   storeEnded,
   storeError,
   commandExecuted,
+  commandCompleted,
 } from '../events'
 
 import { currentStoreId } from './currentStoreId'
@@ -128,6 +129,23 @@ const mapCommandExecutedToEventListItem = (
     firstListItem,
   })
 
+const mapCommandCompletedToEventListItem = (
+  event,
+  previousListItem,
+  firstListItem,
+) =>
+  eventListItem({
+    title: `Command completed`,
+    payload: event.payload.command,
+    isError: false,
+    isPastEvent: false,
+    projectionCalls: [],
+
+    timestamp: event.meta.timestamp,
+    previousListItem,
+    firstListItem,
+  })
+
 const addProjectionCall = (
   lastEventListItem,
   args,
@@ -152,6 +170,7 @@ const fullEventList = ({ useState, useEvent, useProjection }) => (
     projectionCalled,
     storeEvent,
     commandExecuted,
+    commandCompleted,
     aggregatorCreated,
     storeEnded,
     storeError,
@@ -233,6 +252,17 @@ const fullEventList = ({ useState, useEvent, useProjection }) => (
         newEventlist = unshift(
           eventList,
           mapCommandExecutedToEventListItem(
+            event,
+            first(eventList),
+            last(eventList),
+          ),
+        )
+        break
+
+      case commandCompleted.toString():
+        newEventlist = unshift(
+          eventList,
+          mapCommandCompletedToEventListItem(
             event,
             first(eventList),
             last(eventList),

@@ -48,6 +48,11 @@
     &.isCommand {
       background: #456847;
       padding: .1em .5em 0;
+      font-size: 0.7em;
+
+      &.isCommandEnd {
+        background: #685445;
+      }
 
       &.isSelected {
         background-color: rgba(24, 196, 159, 0.6);
@@ -104,6 +109,7 @@
   class:isPastEvent={item.isPastEvent}
   class:isError={item.error}
   class:isCommand={item.isCommand}
+  class:isCommandEnd={item.isCommand && item.type.includes('completed')}
   class:isConnection={item.type && item.type.includes('Init projection')}
   class:isSelected={selected}
   on:click={selectEventListItem}

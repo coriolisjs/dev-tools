@@ -98,6 +98,14 @@ export const commandExecuted = createEventBuilder(
   }),
 )
 
+export const commandCompleted = createEventBuilder(
+  'Coriolis devtools detected a command completed',
+  ({ storeId, command }) => ({
+    storeId,
+    command,
+  }),
+)
+
 export const panelWidthChanged = createEventBuilder(
   'Coriolis devtools panel width changed',
   (width) => width,
