@@ -74,8 +74,8 @@
     "svelte-preprocess": "^4.5.2"
   },
   "dependencies": {
-    "@coriolis/coriolis": "^1.0.0-alpha5",
-    "@coriolis/coriolis-svelte": "^1.0.0-alpha2",
+    "@coriolis/coriolis": "^1.0.0-alpha6",
+    "@coriolis/coriolis-svelte": "^1.0.0-alpha3",
     "@coriolis/parametered-projection": "^1.0.0-alpha2",
     "@sveltejs/svelte-virtual-list": "^3.0.1",
     "@webcomponents/custom-elements": "^1.4.3",
