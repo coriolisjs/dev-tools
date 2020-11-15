@@ -3,24 +3,18 @@
 
   const {
     setStoreAPI,
-    shareStoreAPI
+    shareStoreAPI,
+    whenStoreAPIShared,
   } = createStoreAPIProvider()
 
   export { setStoreAPI }
 </script>
 <script>
-  import * as componentIndex from './views/componentIndex'
-  import DevToolsButton from './units/DevToolsButton.svelte'
-
-  import { enabledViewName } from '../projections/enabledViewName'
+  import Router from './Router.svelte'
 
   shareStoreAPI()
-
-  const CurrentView$ = withProjection(enabledViewName)
 </script>
 
-{#if $CurrentView$}
-  <svelte:component this={componentIndex[$CurrentView$]} />
-{:else}
-  <DevToolsButton />
-{/if}
+{#await whenStoreAPIShared then ready}
+  <Router />
+{/await}
