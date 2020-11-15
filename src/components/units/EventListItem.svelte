@@ -24,12 +24,12 @@
     background: rgba(black, .1);
     line-height: 1.5em;
 
-    &:hover {
-      background: rgba(white, .1);
-    }
-
     &.isEven {
       background: rgba(black, .2);
+    }
+
+    &:hover {
+      background: rgba(white, .1);
     }
 
     &.isPastEvent {
