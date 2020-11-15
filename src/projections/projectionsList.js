@@ -10,6 +10,7 @@ import {
 import { currentStoreId } from './currentStoreId'
 
 const reduceProjectionState = (
+  // eslint-disable-next-line default-param-last
   state = {},
   {
     type,
