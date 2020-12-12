@@ -2,151 +2,151 @@ import { Subject } from 'rxjs'
 import { map, tap } from 'rxjs/operators'
 
 import {
-  createAggregator,
-  createAggregatorFactory,
+  // createAggregator,
+  createStateFlowFactory,
   withSimpleStoreSignature,
 } from '@coriolis/coriolis'
 
 import { createCoriolisDevToolsEffect } from './effect'
 
 import {
-  aggregatorCreated,
-  projectionSetup,
-  projectionCalled,
-  aggregatorCalled,
+  // aggregatorCreated,
+  // projectionSetup,
+  // projectionCalled,
+  // aggregatorCalled,
   commandExecuted,
   storeError,
   commandCompleted,
 } from './events'
 import { lossless } from './lib/rx/operator/lossless'
-import { withValueGetter } from './lib/object/valueGetter'
+// import { withValueGetter } from './lib/object/valueGetter'
 import { asObservable } from './lib/rx/asObservable'
 
 let lastStoreId = 0
 const getStoreId = () => ++lastStoreId
 
-let lastprojectionId = 0
-const getprojectionId = () => ++lastprojectionId
+// let lastprojectionId = 0
+// const getprojectionId = () => ++lastprojectionId
 
-const getProjectionName = (projection) => {
-  try {
-    let foundName
-    projection({
-      useState: () => {},
-      useEvent: () => {},
-      useProjection: () => {},
-      useValue: () => {},
-      setName: (name) => {
-        foundName = name
-      },
-    })
+// const getProjectionName = (projection) => {
+//   try {
+//     let foundName
+//     projection({
+//       useState: () => {},
+//       useEvent: () => {},
+//       useProjection: () => {},
+//       useValue: () => {},
+//       setName: (name) => {
+//         foundName = name
+//       },
+//     })
 
-    return foundName || projection.name
-  } catch (error) {
-    return projection.name
-  }
-}
+//     return foundName || projection.name
+//   } catch (error) {
+//     return projection.name
+//   }
+// }
 
-const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
-  projection,
-  getAggregator,
-) => {
-  const projectionId = getprojectionId()
-  const projectionName = getProjectionName(projection)
+// const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
+//   projection,
+//   getAggregator,
+// ) => {
+//   const projectionId = getprojectionId()
+//   const projectionName = getProjectionName(projection)
 
-  if (projectionName !== projection.name) {
-    Object.defineProperty(projection, 'name', {
-      value: projectionName,
-      writable: false,
-    })
-  }
+//   if (projectionName !== projection.name) {
+//     Object.defineProperty(projection, 'name', {
+//       value: projectionName,
+//       writable: false,
+//     })
+//   }
 
-  const projectionBehaviorWrapper = (projectionBehavior) => (...args) => {
-    const newState = projectionBehavior(...args)
-    if (aggregator) {
-      // During aggregator creation, this projectionBehaviour wrapper can be called to get initial state
-      // this initial call is not triggered by an event, so we don't track it as an projectionCalled event
-      //
-      // TODO: maybe we could track this with an event like "projectionInitialStateCall"
-      trackingSubject.next(
-        projectionCalled({ storeId, projectionId, args, newState }),
-      )
-    }
+//   const projectionBehaviorWrapper = (projectionBehavior) => (...args) => {
+//     const newState = projectionBehavior(...args)
+//     if (aggregator) {
+//       // During aggregator creation, this projectionBehaviour wrapper can be called to get initial state
+//       // this initial call is not triggered by an event, so we don't track it as an projectionCalled event
+//       //
+//       // TODO: maybe we could track this with an event like "projectionInitialStateCall"
+//       trackingSubject.next(
+//         projectionCalled({ storeId, projectionId, args, newState }),
+//       )
+//     }
 
-    return newState
-  }
+//     return newState
+//   }
 
-  const wrappedProjection = (...args) => {
-    if (
-      args.length === 1 &&
-      (args[0].useProjection ||
-        args[0].useEvent ||
-        args[0].useState ||
-        args[0].useValue)
-    ) {
-      let projectionBehavior
-      let shouldThrow = false
+//   const wrappedProjection = (...args) => {
+//     if (
+//       args.length === 1 &&
+//       (args[0].useProjection ||
+//         args[0].useEvent ||
+//         args[0].useState ||
+//         args[0].useValue)
+//     ) {
+//       let projectionBehavior
+//       let shouldThrow = false
 
-      try {
-        projectionBehavior = projection(...args)
-      } catch (error) {
-        shouldThrow = true
-        projectionBehavior = error
-      }
+//       try {
+//         projectionBehavior = projection(...args)
+//       } catch (error) {
+//         shouldThrow = true
+//         projectionBehavior = error
+//       }
 
-      trackingSubject.next(
-        projectionSetup({ storeId, projectionId, projectionBehavior }),
-      )
+//       trackingSubject.next(
+//         projectionSetup({ storeId, projectionId, projectionBehavior }),
+//       )
 
-      // result is not expected type.... maybe this was not a complex projection but a reducer... return what we got
-      if (typeof projectionBehavior !== 'function') {
-        if (shouldThrow) {
-          throw projectionBehavior
-        }
+//       // result is not expected type.... maybe this was not a complex projection but a reducer... return what we got
+//       if (typeof projectionBehavior !== 'function') {
+//         if (shouldThrow) {
+//           throw projectionBehavior
+//         }
 
-        return projectionBehavior
-      }
+//         return projectionBehavior
+//       }
 
-      return projectionBehaviorWrapper(projectionBehavior)
-    }
+//       return projectionBehaviorWrapper(projectionBehavior)
+//     }
 
-    const newState = projection(...args)
-    if (aggregator) {
-      // During aggregator creation, this projection wrapper can be called to get initial state
-      // this initial call is not triggered by an event, so we don't track it as an projectionCalled event
-      //
-      // TODO: maybe we could track this with an event like "projectionInitialStateCall"
-      trackingSubject.next(
-        projectionCalled({ storeId, projectionId, args, newState }),
-      )
-    }
+//     const newState = projection(...args)
+//     if (aggregator) {
+//       // During aggregator creation, this projection wrapper can be called to get initial state
+//       // this initial call is not triggered by an event, so we don't track it as an projectionCalled event
+//       //
+//       // TODO: maybe we could track this with an event like "projectionInitialStateCall"
+//       trackingSubject.next(
+//         projectionCalled({ storeId, projectionId, args, newState }),
+//       )
+//     }
 
-    return newState
-  }
+//     return newState
+//   }
 
-  Object.defineProperty(wrappedProjection, 'name', {
-    value: projectionName,
-    writable: false,
-  })
+//   Object.defineProperty(wrappedProjection, 'name', {
+//     value: projectionName,
+//     writable: false,
+//   })
 
-  Object.defineProperty(wrappedProjection, 'length', {
-    value: projection.length,
-    writable: false,
-  })
+//   Object.defineProperty(wrappedProjection, 'length', {
+//     value: projection.length,
+//     writable: false,
+//   })
 
-  const aggregator = createAggregator(wrappedProjection, getAggregator)
+//   const aggregator = createAggregator(wrappedProjection, getAggregator)
 
-  trackingSubject.next(
-    aggregatorCreated({ storeId, projectionId, projection, aggregator }),
-  )
+//   trackingSubject.next(
+//     aggregatorCreated({ storeId, projectionId, projection, aggregator }),
+//   )
 
-  const wrappedAggregator = (event) => {
-    trackingSubject.next(aggregatorCalled({ storeId, projectionId, event }))
-    return aggregator(event)
-  }
+//   const wrappedAggregator = (event) => {
+//     trackingSubject.next(aggregatorCalled({ storeId, projectionId, event }))
+//     return aggregator(event)
+//   }
 
-  return withValueGetter(wrappedAggregator, aggregator.getValue)
-}
+//   return withValueGetter(wrappedAggregator, aggregator.getValue)
+// }
 
 const wrapCommand = (storeId, trackingSubject, command) => (commandAPI) => {
   trackingSubject.next(commandExecuted({ storeId, command }))
@@ -210,9 +210,11 @@ export const wrapCoriolisOptions = withSimpleStoreSignature(
       ...effects.map(wrapEffect(storeId, aggregatorEvents)),
     ]
 
-    options.aggregatorFactory = createAggregatorFactory(
-      createTrackingAggregatorFactory(storeId, aggregatorEvents),
-    )
+    // options.aggregatorFactory = createAggregatorFactory(
+    //   createTrackingAggregatorFactory(storeId, aggregatorEvents),
+    // )
+    options.stateFlowFactoryBuilder = (event$, skipUntil) =>
+      createStateFlowFactory(event$, skipUntil)
 
     const originalErrorHandler =
       options.errorHandler ||
