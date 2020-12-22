@@ -5,8 +5,8 @@ import { get } from '../lib/object/get'
 
 import {
   storeEvent,
-  projectionCalled,
-  aggregatorCreated,
+  // projectionCalled,
+  // aggregatorCreated,
   storeEnded,
   storeError,
   commandExecuted,
@@ -16,8 +16,8 @@ import {
 import { currentStoreId } from './currentStoreId'
 import { fullProjectionsIndex } from './projectionsList'
 
-const ifUndefined = (value, defaultValue) =>
-  value === undefined || value === null ? defaultValue : value
+// const ifUndefined = (value, defaultValue) =>
+//   value === undefined || value === null ? defaultValue : value
 
 const getTimestampDelta = (timestamp2, timestamp1) =>
   timestamp1 ? timestamp2 - timestamp1 : 0
@@ -68,23 +68,23 @@ const mapStoreEventToEventListItem = (
     firstListItem,
   })
 
-const mapAggregatorCreatedToEventListItem = (
-  event,
-  previousListItem,
-  firstListItem,
-) =>
-  eventListItem({
-    title: `Init projection ${event.payload.projection.name}`,
-    payload: event.payload.aggregator.value,
-    meta: {},
-    isError: false,
-    isPastEvent: ifUndefined(get(previousListItem, 'isPastEvent'), true),
-    projectionCalls: [],
+// const mapAggregatorCreatedToEventListItem = (
+//   event,
+//   previousListItem,
+//   firstListItem,
+// ) =>
+//   eventListItem({
+//     title: `Init projection ${event.payload.projection.name}`,
+//     payload: event.payload.aggregator.value,
+//     meta: {},
+//     isError: false,
+//     isPastEvent: ifUndefined(get(previousListItem, 'isPastEvent'), true),
+//     projectionCalls: [],
 
-    timestamp: event.meta.timestamp,
-    previousListItem,
-    firstListItem,
-  })
+//     timestamp: event.meta.timestamp,
+//     previousListItem,
+//     firstListItem,
+//   })
 
 const mapStoreEndedToEventListItem = (event, previousListItem, firstListItem) =>
   eventListItem({
@@ -146,32 +146,32 @@ const mapCommandCompletedToEventListItem = (
     firstListItem,
   })
 
-const addProjectionCall = (
-  lastEventListItem,
-  args,
-  newState,
-  projectionData,
-) => ({
-  ...lastEventListItem,
-  projectionCalls: [
-    ...lastEventListItem.projectionCalls,
-    {
-      ...projectionData,
-      args,
-      previousState: projectionData.aggregator.value,
-      newState,
-    },
-  ],
-})
+// const addProjectionCall = (
+//   lastEventListItem,
+//   args,
+//   newState,
+//   projectionData,
+// ) => ({
+//   ...lastEventListItem,
+//   projectionCalls: [
+//     ...lastEventListItem.projectionCalls,
+//     {
+//       ...projectionData,
+//       args,
+//       previousState: projectionData.aggregator.value,
+//       newState,
+//     },
+//   ],
+// })
 
 const fullEventList = ({ useState, useEvent, useProjection }) => (
   useState({}),
   useEvent(
-    projectionCalled,
+    // projectionCalled,
     storeEvent,
     commandExecuted,
     commandCompleted,
-    aggregatorCreated,
+    // aggregatorCreated,
     storeEnded,
     storeError,
   ),
@@ -200,16 +200,16 @@ const fullEventList = ({ useState, useEvent, useProjection }) => (
         break
       }
 
-      case aggregatorCreated.toString():
-        newEventlist = unshift(
-          eventList,
-          mapAggregatorCreatedToEventListItem(
-            event,
-            first(eventList),
-            last(eventList),
-          ),
-        )
-        break
+      // case aggregatorCreated.toString():
+      //   newEventlist = unshift(
+      //     eventList,
+      //     mapAggregatorCreatedToEventListItem(
+      //       event,
+      //       first(eventList),
+      //       last(eventList),
+      //     ),
+      //   )
+      //   break
 
       case storeEnded.toString():
         newEventlist = unshift(
@@ -233,20 +233,20 @@ const fullEventList = ({ useState, useEvent, useProjection }) => (
         )
         break
 
-      case projectionCalled.toString(): {
-        const {
-          payload: { storeId, projectionId, args, newState },
-        } = event
+      // case projectionCalled.toString(): {
+      //   const {
+      //     payload: { storeId, projectionId, args, newState },
+      //   } = event
 
-        const lastEvent = eventList[0]
-        const projectionData = projectionIndexes[storeId][projectionId]
+      //   const lastEvent = eventList[0]
+      //   const projectionData = projectionIndexes[storeId][projectionId]
 
-        newEventlist = [
-          addProjectionCall(lastEvent, args, newState, projectionData),
-          ...eventList.slice(1),
-        ]
-        break
-      }
+      //   newEventlist = [
+      //     addProjectionCall(lastEvent, args, newState, projectionData),
+      //     ...eventList.slice(1),
+      //   ]
+      //   break
+      // }
 
       case commandExecuted.toString():
         newEventlist = unshift(
