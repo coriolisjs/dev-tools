@@ -12,7 +12,7 @@
   let isProjectionInit
 
   $: isProjectionInit = details.type.includes('Init projection')
-  $: console.log(details)
+  $: console.log('Event details :', details)
   const close = createDispatch(() => selectedEventListItem(undefined))
 </script>
 

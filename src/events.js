@@ -16,6 +16,11 @@ export const devtoolsClosed = createEventBuilder(
   'Coriolis devtools : have been closed',
 )
 
+export const panelWidthChanged = createEventBuilder(
+  'Coriolis devtools : panel width changed',
+  (width) => width,
+)
+
 export const eventListFilterChange = createEventBuilder(
   'Coriolis devtools : event list filter have been changed',
   (filter) => filter,
@@ -29,6 +34,11 @@ export const selectedEventListItem = createEventBuilder(
 export const timingTypeSelected = createEventBuilder(
   'Coriolis devtools : timing type for event display have been selected',
   (type) => type,
+)
+
+export const currentStoreChanged = createEventBuilder(
+  'Coriolis devtools : current event store have been changed',
+  (storeId) => storeId,
 )
 
 export const storeAdded = createEventBuilder(
@@ -46,10 +56,16 @@ export const storeError = createEventBuilder(
   ({ storeId, error }) => ({ storeId, error }),
 )
 
-export const currentStoreChanged = createEventBuilder(
-  'Coriolis devtools : current event store have been changed',
-  (storeId) => storeId,
+export const effectAdded = createEventBuilder(
+  'Coriolis devtools : An effect has been added to a store',
+  (storeId, effect) => ({ storeId, effect }),
 )
+
+export const effectRemoved = createEventBuilder(
+  `Coriolis devtools : An effect has been removed from it's store`,
+  (storeId, effect) => ({ storeId, effect }),
+)
+
 export const storeEvent = createEventBuilder(
   'Coriolis devtools : detected an event',
   ({ storeId, event, isPastEvent }) => ({
@@ -75,11 +91,6 @@ export const commandCompleted = createEventBuilder(
   }),
 )
 
-export const panelWidthChanged = createEventBuilder(
-  'Coriolis devtools : panel width changed',
-  (width) => width,
-)
-
 export const stateFlowIndexed = createEventBuilder(
   'Coriolis devtools : StateFlow has been linked with a projection or equivalent',
   ({ storeId, stateFlowId, stateFlow, args }) => ({
@@ -90,17 +101,25 @@ export const stateFlowIndexed = createEventBuilder(
   }),
 )
 
-export const accessedMemoizedReducerState = createEventBuilder(
-  'Coriolis devtools : ReducerState accessed with memoized event',
-  ({ reducerState, event }) => ({ reducerState, event }),
+export const accessedMemoizedReducedProjection = createEventBuilder(
+  'Coriolis devtools : ReducedProjection accessed with memoized event',
+  ({ reducedProjection, event }) => ({ reducedProjection, event }),
 )
 
-export const reducerStateCreated = createEventBuilder(
-  'Coriolis devtools : ReducerState created',
-  ({ reducerState, parentReducerState, event }) => ({
-    reducerState,
-    parentReducerState,
+export const initialReducedProjectionCreated = createEventBuilder(
+  'Coriolis devtools : Initial reducedProjection created',
+  ({ stateFlowId, reducedProjection }) => ({
+    stateFlowId,
+    reducedProjection,
+  }),
+)
+
+export const nextReducedProjectionCreated = createEventBuilder(
+  'Coriolis devtools : ReducedProjection created',
+  ({ parentReducedProjection, event, reducedProjection }) => ({
+    parentReducedProjection,
     event,
+    reducedProjection,
   }),
 )
 

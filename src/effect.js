@@ -1,4 +1,7 @@
-import { EMPTY } from 'rxjs'
+import { identity, EMPTY } from 'rxjs'
+import { map } from 'rxjs/operators'
+
+import { produce } from 'immer'
 
 import { createStore, snapshot } from '@coriolis/coriolis'
 
@@ -10,11 +13,17 @@ let destroyDevtoolsStore
 const initDevtoolsEventStore = () => {
   let devtoolsDispatch
 
-  destroyDevtoolsStore = createStore(createUI(), storage, ({ dispatch }) => {
-    devtoolsDispatch = dispatch
-  })
+  destroyDevtoolsStore = createStore(
+    { eventEnhancer: map(produce(identity)) },
+    createUI(),
+    storage,
+    ({ dispatch }) => {
+      devtoolsDispatch = dispatch
+    },
+  )
 
-  return (storeId, storeName = 'unnamed', aggregatorEvents = EMPTY) => ({
+  // TODO: should not receive storeId and trackingEvents$, we should create it here and return a Subject to receive new events
+  return (storeId, storeName = 'unnamed', trackingEvents = EMPTY) => ({
     event$,
     pastEvent$,
     withProjection,
@@ -27,8 +36,8 @@ const initDevtoolsEventStore = () => {
       }),
     )
 
-    const aggregatorEventsSubscription = aggregatorEvents.subscribe((event) =>
-      devtoolsDispatch(event),
+    const trackingEventsSubscription = trackingEvents.subscribe((event) =>
+      devtoolsDispatch({ ...event, payload: { ...event.payload, storeId } }),
     )
     const pastEventsSubscription = pastEvent$.subscribe((event) =>
       devtoolsDispatch(storeEvent({ storeId, event, isPastEvent: true })),
@@ -37,10 +46,11 @@ const initDevtoolsEventStore = () => {
       devtoolsDispatch(storeEvent({ storeId, event })),
     )
 
+    // TODO: should return an object with the effect and the tracking subject
     return () => {
       devtoolsDispatch(storeEnded({ storeId }))
       // unsubscribe this later so we can still catch store error events
-      setTimeout(() => aggregatorEventsSubscription.unsubscribe(), 1000)
+      setTimeout(() => trackingEventsSubscription.unsubscribe(), 1000)
       pastEventsSubscription.unsubscribe()
       eventsSubscription.unsubscribe()
     }
