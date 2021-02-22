@@ -1,50 +1,40 @@
-import { Subject } from 'rxjs'
-
+import { merge } from 'rxjs'
 import { withSimpleStoreSignature } from '@coriolis/coriolis'
 
 import { createCoriolisDevToolsEffect } from '../effect'
 
-import { storeError } from '../events'
-
 import { wrapEffect } from './effect'
-import { createTrackedStateFlowFactory } from './stateFlowFactory'
-
-import { lossless } from '../lib/rx/operator/lossless'
-
-let lastStoreId = 0
-const getStoreId = () => ++lastStoreId
+import { wrapErrorHandler } from './errorHandler'
+import { createTrackedStateFlowFactoryBuilder } from './stateFlowFactory'
 
 export const wrapCoriolisOptions = withSimpleStoreSignature(
   (options, ...effects) => {
-    const storeId = getStoreId()
-    const trackingSubject = new Subject()
+    const wrappedEffects = effects.map(wrapEffect)
+
+    const {
+      tracking$: stateFlowTracking$,
+      createStateFlowFactory: wrappedStateFlowFactoryBuilder,
+    } = createTrackedStateFlowFactoryBuilder(options.stateFlowFactoryBuilder)
+
+    const {
+      tracking$: errorTracking$,
+      errorHandler: wrappedErrorHandler,
+    } = wrapErrorHandler(options.errorHandler)
 
     const devtoolsEffect = createCoriolisDevToolsEffect(
-      storeId,
       options.storeName,
-      trackingSubject.pipe(lossless),
+      merge(
+        stateFlowTracking$,
+        errorTracking$,
+        ...wrappedEffects.map(({ tracking$ }) => tracking$),
+      ),
     )
 
-    options.effects = [
-      devtoolsEffect,
-      ...effects.map(wrapEffect(trackingSubject)),
-    ]
-
-    options.stateFlowFactoryBuilder = createTrackedStateFlowFactory(
-      trackingSubject,
-    )
-
-    const originalErrorHandler =
-      options.errorHandler ||
-      ((error) => {
-        throw error
-      })
-
-    options.errorHandler = (error) => {
-      trackingSubject.next(storeError({ error }))
-      originalErrorHandler(error)
+    return {
+      ...options,
+      effects: [devtoolsEffect, ...wrappedEffects.map(({ effect }) => effect)],
+      stateFlowFactoryBuilder: wrappedStateFlowFactoryBuilder,
+      errorHandler: wrappedErrorHandler,
     }
-
-    return options
   },
 )

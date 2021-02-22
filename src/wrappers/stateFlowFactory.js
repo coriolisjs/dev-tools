@@ -1,30 +1,41 @@
-import { createStateFlowFactory } from '@coriolis/coriolis'
+import { Subject } from 'rxjs'
+import { createStateFlowFactory as defaultCreateStateFlowFactory } from '@coriolis/coriolis'
 
-import { createTrackedStateFlow } from './stateFlow'
+import { createTrackedStateFlowBuilder } from './stateFlow'
 
 import { stateFlowIndexed } from '../events'
 
-export const createTrackedStateFlowFactory = (trackingSubject) => (
-  event$,
-  skipUntil,
+export const createTrackedStateFlowFactoryBuilder = (
+  createStateFlowFactory = defaultCreateStateFlowFactory,
 ) => {
-  const stateFlowFactory = createStateFlowFactory(
-    event$,
-    skipUntil,
-    createTrackedStateFlow(trackingSubject),
-  )
+  const trackingSubject = new Subject()
 
-  return (...args) => {
-    // TODO : here we could wrap projection to track.... something about compilation
-    const stateFlow = stateFlowFactory(...args)
-    trackingSubject.next(
-      stateFlowIndexed({
-        stateFlowId: stateFlow.id,
-        stateFlow: stateFlow,
-        args,
-      }),
-    )
+  return {
+    tracking$: trackingSubject,
+    createStateFlowFactory: (event$, skipUntil) => {
+      const { tracking$, createStateFlow } = createTrackedStateFlowBuilder()
 
-    return stateFlow
+      tracking$.subscribe(trackingSubject)
+
+      const stateFlowFactory = createStateFlowFactory(
+        event$,
+        skipUntil,
+        createStateFlow,
+      )
+
+      return (...args) => {
+        // TODO : here we could wrap projection to track.... something about compilation
+        const stateFlow = stateFlowFactory(...args)
+        trackingSubject.next(
+          stateFlowIndexed({
+            stateFlowId: stateFlow.id,
+            stateFlow: stateFlow,
+            args,
+          }),
+        )
+
+        return stateFlow
+      }
+    },
   }
 }

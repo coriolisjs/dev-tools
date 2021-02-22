@@ -1,4 +1,4 @@
-import { identity, EMPTY } from 'rxjs'
+import { identity, noop } from 'rxjs'
 import { map } from 'rxjs/operators'
 
 import { produce } from 'immer'
@@ -11,7 +11,10 @@ import { storeEvent, storeAdded, storeEnded } from './events'
 
 let destroyDevtoolsStore
 const initDevtoolsEventStore = () => {
-  let devtoolsDispatch
+  let devtoolsDispatch = noop
+
+  let lastStoreId = 0
+  const getStoreId = () => ++lastStoreId
 
   destroyDevtoolsStore = createStore(
     { eventEnhancer: map(produce(identity)) },
@@ -19,40 +22,48 @@ const initDevtoolsEventStore = () => {
     storage,
     ({ dispatch }) => {
       devtoolsDispatch = dispatch
+
+      return () => {
+        devtoolsDispatch = noop
+        createDevtoolsEffect = undefined
+      }
     },
   )
 
-  // TODO: should not receive storeId and trackingEvents$, we should create it here and return a Subject to receive new events
-  return (storeId, storeName = 'unnamed', trackingEvents = EMPTY) => ({
-    event$,
-    pastEvent$,
-    withProjection,
-  }) => {
-    devtoolsDispatch(
-      storeAdded({
-        storeId,
-        storeName,
-        snapshot$: withProjection(snapshot),
+  return (storeName = 'unnamed', tracking$) => {
+    const storeId = getStoreId()
+
+    const trackingSubjectSubscription = tracking$.subscribe((event) =>
+      devtoolsDispatch({
+        ...event,
+        payload: { ...event.payload, storeId },
       }),
     )
 
-    const trackingEventsSubscription = trackingEvents.subscribe((event) =>
-      devtoolsDispatch({ ...event, payload: { ...event.payload, storeId } }),
-    )
-    const pastEventsSubscription = pastEvent$.subscribe((event) =>
-      devtoolsDispatch(storeEvent({ storeId, event, isPastEvent: true })),
-    )
-    const eventsSubscription = event$.subscribe((event) =>
-      devtoolsDispatch(storeEvent({ storeId, event })),
-    )
+    return ({ event$, pastEvent$, withProjection }) => {
+      devtoolsDispatch(
+        storeAdded({
+          storeId,
+          storeName,
+          snapshot$: withProjection(snapshot),
+        }),
+      )
 
-    // TODO: should return an object with the effect and the tracking subject
-    return () => {
-      devtoolsDispatch(storeEnded({ storeId }))
-      // unsubscribe this later so we can still catch store error events
-      setTimeout(() => trackingEventsSubscription.unsubscribe(), 1000)
-      pastEventsSubscription.unsubscribe()
-      eventsSubscription.unsubscribe()
+      const pastEventsSubscription = pastEvent$.subscribe((event) =>
+        devtoolsDispatch(storeEvent({ storeId, event, isPastEvent: true })),
+      )
+
+      const eventsSubscription = event$.subscribe((event) =>
+        devtoolsDispatch(storeEvent({ storeId, event })),
+      )
+
+      return () => {
+        devtoolsDispatch(storeEnded({ storeId }))
+        // unsubscribe this later so we can still catch store error events
+        setTimeout(() => trackingSubjectSubscription.unsubscribe(), 1000)
+        pastEventsSubscription.unsubscribe()
+        eventsSubscription.unsubscribe()
+      }
     }
   }
 }
