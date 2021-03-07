@@ -9,7 +9,7 @@ import {
   connectedStateFlow,
   disconnectedStateFlow,
   accessedStateFlowValue,
-  gotNextStateFlowValue,
+  requestedNextStateFlowValue,
 } from '../events'
 
 import { wrapReducedProjection } from './reducedProjection'
@@ -84,7 +84,7 @@ export const createTrackedStateFlow = (trackingSubject) => (
 
   const internalGetNextValueTracked = (event) => {
     trackingSubject.next(
-      gotNextStateFlowValue({ stateFlowId, event, internal: true }),
+      requestedNextStateFlowValue({ stateFlowId, event, internal: true }),
     )
 
     return stateFlow.internal.getNextValue(event)

@@ -148,7 +148,7 @@ export const accessedStateFlowValue = createEventBuilder(
   ({ stateFlow, internal }) => ({ stateFlow, internal }),
 )
 
-export const gotNextStateFlowValue = createEventBuilder(
+export const requestedNextStateFlowValue = createEventBuilder(
   'Coriolis devtools : StateFlow next value created',
   ({ stateFlow, event, internal }) => ({ stateFlow, event, internal }),
 )
