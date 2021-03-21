@@ -1,4 +1,5 @@
 import { get } from '../lib/object/get'
+import { humanReadableTimeDelta } from '../lib/time/humanReadableTimeDelta'
 
 const getTimestampDelta = (timestamp2, timestamp1) =>
   timestamp1 ? timestamp2 - timestamp1 : 0
@@ -25,8 +26,12 @@ export const eventListItem = ({
 
   date: new Date(timestamp).toLocaleString(),
   timestamp: timestamp,
-  deltaN: getTimestampDelta(timestamp, get(previousListItem, 'timestamp')),
-  delta0: getTimestampDelta(timestamp, get(firstListItem, 'timestamp')),
+  deltaN: humanReadableTimeDelta(
+    getTimestampDelta(timestamp, get(previousListItem, 'timestamp')),
+  ),
+  delta0: humanReadableTimeDelta(
+    getTimestampDelta(timestamp, get(firstListItem, 'timestamp')),
+  ),
   rank: (get(previousListItem, 'rank') || 0) + 1,
 })
 
