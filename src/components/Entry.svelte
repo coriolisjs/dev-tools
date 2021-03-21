@@ -1,5 +1,5 @@
 <script context="module">
-  import { withProjection, createStoreAPIProvider } from '@coriolis/coriolis-svelte'
+  import { createStoreAPIProvider } from '@coriolis/coriolis-svelte'
 
   const {
     setStoreAPI,
