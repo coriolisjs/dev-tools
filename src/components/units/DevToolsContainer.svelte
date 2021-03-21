@@ -108,7 +108,7 @@
       cursor: col-resize;
     }
 
-    :global(> *) {
+    > :global(*) {
       flex: 1;
       overflow: auto;
     }
