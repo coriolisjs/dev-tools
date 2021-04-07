@@ -12,8 +12,8 @@ export const wrapReducedProjection = (
   reducedProjectionCount += 1
 
   const wrappedReducedProjection = {
+    ...reducedProjection,
     id: reducedProjectionCount,
-    name: reducedProjection.name,
     getNextState: (event) => {
       const nextReducedProjection = reducedProjection.getNextState(event)
 
@@ -42,7 +42,6 @@ export const wrapReducedProjection = (
         trackingSubject,
       )
     },
-    value: reducedProjection.value,
   }
 
   return wrappedReducedProjection
