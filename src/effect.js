@@ -1,4 +1,7 @@
-import { EMPTY } from 'rxjs'
+import { identity, noop } from 'rxjs'
+import { map } from 'rxjs/operators'
+
+import { produce } from 'immer'
 
 import { createStore, snapshot } from '@coriolis/coriolis'
 
@@ -8,41 +11,59 @@ import { storeEvent, storeAdded, storeEnded } from './events'
 
 let destroyDevtoolsStore
 const initDevtoolsEventStore = () => {
-  let devtoolsDispatch
+  let devtoolsDispatch = noop
 
-  destroyDevtoolsStore = createStore(createUI(), storage, ({ dispatch }) => {
-    devtoolsDispatch = dispatch
-  })
+  let lastStoreId = 0
+  const getStoreId = () => ++lastStoreId
 
-  return (storeId, storeName = 'unnamed', aggregatorEvents = EMPTY) => ({
-    event$,
-    pastEvent$,
-    withProjection,
-  }) => {
-    devtoolsDispatch(
-      storeAdded({
-        storeId,
-        storeName,
-        snapshot$: withProjection(snapshot),
+  destroyDevtoolsStore = createStore(
+    { eventEnhancer: map(produce(identity)) },
+    createUI(),
+    storage,
+    ({ dispatch }) => {
+      devtoolsDispatch = dispatch
+
+      return () => {
+        devtoolsDispatch = noop
+        createDevtoolsEffect = undefined
+      }
+    },
+  )
+
+  return (storeName = 'unnamed', tracking$) => {
+    const storeId = getStoreId()
+
+    const trackingSubjectSubscription = tracking$.subscribe((event) =>
+      devtoolsDispatch({
+        ...event,
+        payload: { ...event.payload, storeId },
       }),
     )
 
-    const aggregatorEventsSubscription = aggregatorEvents.subscribe((event) =>
-      devtoolsDispatch(event),
-    )
-    const pastEventsSubscription = pastEvent$.subscribe((event) =>
-      devtoolsDispatch(storeEvent({ storeId, event, isPastEvent: true })),
-    )
-    const eventsSubscription = event$.subscribe((event) =>
-      devtoolsDispatch(storeEvent({ storeId, event })),
-    )
+    return ({ event$, pastEvent$, withProjection }) => {
+      devtoolsDispatch(
+        storeAdded({
+          storeId,
+          storeName,
+          snapshot$: withProjection(snapshot),
+        }),
+      )
 
-    return () => {
-      devtoolsDispatch(storeEnded({ storeId }))
-      // unsubscribe this later so we can still catch store error events
-      setTimeout(() => aggregatorEventsSubscription.unsubscribe(), 1000)
-      pastEventsSubscription.unsubscribe()
-      eventsSubscription.unsubscribe()
+      const pastEventsSubscription = pastEvent$.subscribe((event) =>
+        devtoolsDispatch(storeEvent({ storeId, event, isPastEvent: true })),
+      )
+
+      const eventsSubscription = event$.subscribe((event) =>
+        devtoolsDispatch(storeEvent({ storeId, event })),
+      )
+
+      return () => {
+        devtoolsDispatch(storeEnded({ storeId }))
+        // unsubscribe this later so we can still catch store error events
+        setTimeout(() => trackingSubjectSubscription.unsubscribe(), 1000)
+        pastEventsSubscription.unsubscribe()
+        eventsSubscription.unsubscribe()
+      }
     }
   }
 }
