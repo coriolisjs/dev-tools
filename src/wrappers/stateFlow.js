@@ -1,6 +1,9 @@
-import { Observable, Subject } from 'rxjs'
+import { identity, Subject } from 'rxjs'
 
 import { createStateFlow } from '@coriolis/coriolis'
+
+import { setValueGetter } from '../lib/object/valueGetter'
+import { trackSubscriptions } from '../lib/rx/operator/trackSubscriptions'
 
 import {
   initialReducedProjectionCreated,
@@ -13,9 +16,6 @@ import {
 } from '../events'
 
 import { wrapReducedProjection } from './reducedProjection'
-
-import { setValueGetter } from '../lib/object/valueGetter'
-import { simpleUnsub } from '../lib/rx/simpleUnsub'
 
 let stateFlowCount = 0
 export const createTrackedStateFlowBuilder = () => {
@@ -42,29 +42,49 @@ export const createTrackedStateFlowBuilder = () => {
         }),
       )
 
-      const trackedStateFlow = stateFlow.external.pipe(
-        (source) =>
-          new Observable((observer) => {
-            trackingSubject.next(subscribedStateFlow({ stateFlowId }))
-
-            const subscription = source.subscribe(observer)
-            return () => {
-              trackingSubject.next(unsubscribedStateFlow({ stateFlowId }))
-
-              return subscription.unsubscribe()
+      const warnUnconnectedSubscriptions = stateFlow.stateless
+        ? identity
+        : trackSubscriptions(() => {
+            if (stateFlow.isConnected()) {
+              return
             }
-          }),
+            console.warn(
+              `Subscribing on projection "${stateFlow.name}" while not connected`,
+            )
+          })
+
+      const trackedStateFlow = stateFlow.external.pipe(
+        trackSubscriptions(
+          () => trackingSubject.next(subscribedStateFlow({ stateFlowId })),
+          () => trackingSubject.next(unsubscribedStateFlow({ stateFlowId })),
+        ),
+        warnUnconnectedSubscriptions,
       )
 
-      trackedStateFlow.connect = () => {
-        trackingSubject.next(connectedStateFlow({ stateFlowId }))
-        const unsub = simpleUnsub(trackedStateFlow.subscribe())
+      trackedStateFlow.connect = !stateFlow.stateless
+        ? () => {
+            trackingSubject.next(connectedStateFlow({ stateFlowId }))
 
-        return () => {
-          trackingSubject.next(disconnectedStateFlow({ stateFlowId }))
-          return unsub()
-        }
-      }
+            // original connect method must be called because it does not only do a subscription
+            const disconnect = stateFlow.external.connect()
+
+            // TODO: maybe we should not do this subscription....
+            // const unsub = simpleUnsub(trackedStateFlow.subscribe())
+
+            return () => {
+              trackingSubject.next(disconnectedStateFlow({ stateFlowId }))
+              return disconnect()
+              // return unsub()
+            }
+          }
+        : () => {
+            console.warn(
+              `Connecting a stateless projection (${
+                stateFlow.name || 'unnamed'
+              }) is useless.\nMaybe you intended to connect a statefull projection this one depends on ?`,
+            )
+            return () => {}
+          }
 
       const getValue = stateFlow.internal.getValue
 
