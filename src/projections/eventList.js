@@ -3,13 +3,9 @@ import { last } from '../lib/array/last'
 import { unshift } from '../lib/array/unshift'
 import { get } from '../lib/object/get'
 
-import {
-  storeEvent,
-  storeEnded,
-  storeError,
-  commandExecuted,
-  commandCompleted,
-} from '../events'
+import { storeEvent, storeEnded, storeError } from '../events/tracking/store'
+
+import { commandExecuted, commandCompleted } from '../events/tracking/command'
 
 import { currentStoreId } from './currentStoreId'
 

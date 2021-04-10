@@ -3,7 +3,7 @@ import { map, tap } from 'rxjs/operators'
 
 import { asObservable } from '../lib/rx/asObservable'
 
-import { commandCompleted, commandExecuted } from '../events'
+import { commandCompleted, commandExecuted } from '../events/tracking/command'
 
 export const wrapCommand = (command) => {
   const trackingSubject = new Subject()

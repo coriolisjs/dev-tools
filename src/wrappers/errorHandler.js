@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs'
 
-import { storeError } from '../events'
+import { storeError } from '../events/tracking/store'
 
 const defaultErrorHandler = (error) => {
   throw error

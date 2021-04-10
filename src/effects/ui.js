@@ -16,7 +16,7 @@ import { projectionsList } from '../projections/projectionsList'
 
 // import { stateFlowList } from '../projections/stateFlowList'
 
-import { viewAdded, panelWidthChanged } from '../events'
+import { viewAdded, panelWidthChanged } from '../events/ui'
 
 import { nav } from './nav'
 

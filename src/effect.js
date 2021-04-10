@@ -7,7 +7,7 @@ import { createStore, snapshot } from '@coriolis/coriolis'
 
 import { storage } from './effects/storage'
 import { createUI } from './effects/ui'
-import { storeEvent, storeAdded, storeEnded } from './events'
+import { storeEvent, storeAdded, storeEnded } from './events/tracking/store'
 
 let destroyDevtoolsStore
 const initDevtoolsEventStore = () => {

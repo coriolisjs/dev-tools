@@ -3,7 +3,7 @@ import { createStateFlowFactory as defaultCreateStateFlowFactory } from '@coriol
 
 import { createTrackedStateFlowBuilder } from './stateFlow'
 
-import { stateFlowIndexed } from '../events'
+import { stateFlowIndexed } from '../events/tracking/stateFlow'
 
 export const createTrackedStateFlowFactoryBuilder = (
   createStateFlowFactory = defaultCreateStateFlowFactory,

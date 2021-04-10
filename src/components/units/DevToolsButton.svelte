@@ -1,6 +1,6 @@
 <script>
   import { isDevtoolsOpen } from '../../projections/isDevtoolsOpen'
-  import { devtoolsOpened } from '../../events'
+  import { devtoolsOpened } from '../../events/ui'
 
   import NavButton from './NavButton.svelte'
 </script>

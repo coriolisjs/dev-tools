@@ -1,7 +1,7 @@
 import { produce, original } from 'immer'
 import { set } from 'immer/dist/internal'
 
-import { stateFlowIndexed /*, initialReducedProjectionCreated, nextReducedProjectionCreated*/ } from '../events'
+import { stateFlowIndexed /*, initialReducedProjectionCreated, nextReducedProjectionCreated*/ } from '../events/tracking/stateFlow'
 import { get } from '../lib/object/get'
 import { currentStoreId } from './currentStoreId'
 
