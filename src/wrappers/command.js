@@ -19,7 +19,14 @@ export const wrapCommand = (command) => {
         }),
         map((event) => {
           if (typeof event === 'function') {
-            return wrapCommand(event)
+            const { tracking$, command: subCommand } = wrapCommand(event)
+
+            // Here a simple subscription do the job BECAUSE the trackingSubject never completes.
+            // If any change makes this subject complete, there would be a problem here when
+            // a subcommand emits any tracking event after parent command's tracking subject completed.
+            // This could happen because a parent command can complete before its child commands
+            tracking$.subscribe(trackingSubject)
+            return subCommand
           }
 
           const meta = event.meta || {}
