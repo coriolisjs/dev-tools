@@ -1,5 +1,5 @@
 <script>
-  export let name
+  export let type
   export let count
 </script>
 
@@ -24,6 +24,6 @@
 </style>
 
 <li>
-  {name}
+  {type}
   <span class="count">{count}</span>
 </li>
