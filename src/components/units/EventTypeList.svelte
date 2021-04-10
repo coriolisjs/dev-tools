@@ -17,7 +17,7 @@
 </style>
 
 <ul class="event-type-list">
-{#each $eventTypeList$ as eventType (eventType.name)}
+{#each $eventTypeList$ as eventType (eventType.type)}
   <EventTypeListItem {...eventType} />
 {/each}
 </ul>
