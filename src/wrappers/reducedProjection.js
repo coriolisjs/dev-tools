@@ -1,7 +1,7 @@
 import {
   accessedMemoizedReducedProjection,
   nextReducedProjectionCreated,
-} from '../events'
+} from '../events/tracking/stateFlow'
 
 let reducedProjectionCount = 0
 export const wrapReducedProjection = (

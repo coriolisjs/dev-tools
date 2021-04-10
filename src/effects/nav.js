@@ -4,7 +4,7 @@ import { defaultViewName } from '../projections/defaultViewName'
 import { currentViewName } from '../projections/currentViewName'
 import { replacementViewName } from '../projections/replacementViewName'
 
-import { viewChanged } from '../events'
+import { viewChanged } from '../events/ui'
 
 const UNDEFINED_VIEW_NAME = 'UndefinedView'
 

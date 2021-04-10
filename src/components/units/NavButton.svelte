@@ -2,7 +2,7 @@
   import { withProjection, createDispatch } from '@coriolis/coriolis-svelte'
 
   import { currentViewName } from '../../projections/currentViewName'
-  import { viewChanged } from '../../events'
+  import { viewChanged } from '../../events/ui'
 
   export let view
   export let projection = currentViewName

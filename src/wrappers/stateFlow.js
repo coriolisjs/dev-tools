@@ -13,7 +13,7 @@ import {
   disconnectedStateFlow,
   accessedStateFlowValue,
   requestedNextStateFlowValue,
-} from '../events'
+} from '../events/tracking/stateFlow'
 
 import { wrapReducedProjection } from './reducedProjection'
 

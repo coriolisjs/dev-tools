@@ -4,7 +4,7 @@
 
   import { viewList } from '../../projections/viewList'
   import { isDevtoolsOpen } from '../../projections/isDevtoolsOpen'
-  import { devtoolsClosed, panelWidthChanged } from '../../events'
+  import { devtoolsClosed, panelWidthChanged } from '../../events/ui'
 
   import NavButton from './NavButton.svelte'
 
