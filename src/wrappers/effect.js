@@ -1,5 +1,9 @@
 import { Subject } from 'rxjs'
-import { effectAdded, effectRemoved } from '../events/tracking/effect'
+import {
+  effectAdded,
+  effectRemoved,
+  withProjectionCalled,
+} from '../events/tracking/effect'
 
 import { wrapCommand } from './command'
 
@@ -23,6 +27,19 @@ export const wrapEffect = (effect) => {
     return effectAPI.dispatch(event)
   }
 
+  const createTrackedWithProjection = (effectAPI) => (...args) => {
+    const stateFlow = effectAPI.withProjection(...args)
+
+    trackingSubject.next(
+      withProjectionCalled({
+        projection: args,
+        stateFlow: stateFlow,
+      }),
+    )
+
+    return stateFlow
+  }
+
   return {
     tracking$: trackingSubject,
     effect: (effectAPI) => {
@@ -32,15 +49,14 @@ export const wrapEffect = (effect) => {
         ...effectAPI,
         addEffect: createTrackedAddEffect(effectAPI),
         dispatch: createTrackedDispatch(effectAPI),
+        withProjection: createTrackedWithProjection(effectAPI),
+
         // TODO : Add more tracking types
         // - addSource: () => {},
         // - addLogger: () => {},
         // - addEventEnhancer: () => {},
         // - addPastEventEnhancer: () => {},
         // - addAllEventsEnhancer: () => {},
-
-        // we already track this using stateFow creation tracking
-        // - withProjection: () => {},
       })
 
       return () => {

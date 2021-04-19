@@ -1,31 +1,32 @@
+import { Subject } from 'rxjs'
 import {
   accessedMemoizedReducedProjection,
   nextReducedProjectionCreated,
 } from '../events/tracking/stateFlow'
 
-let reducedProjectionCount = 0
-export const wrapReducedProjection = (
-  reducedProjection,
-  stateFlowId,
-  trackingSubject,
-) => {
-  reducedProjectionCount += 1
+let count = 0
+const getId = () => {
+  count += 1
+  return count
+}
 
-  const wrappedReducedProjection = {
+export const wrapReducedProjection = (reducedProjection) => {
+  const trackingSubject = new Subject()
+
+  const trackedReducedProjection = {
     ...reducedProjection,
-    id: reducedProjectionCount,
+    id: getId(),
     getNextState: (event) => {
       const nextReducedProjection = reducedProjection.getNextState(event)
 
       if (nextReducedProjection === reducedProjection) {
         trackingSubject.next(
           accessedMemoizedReducedProjection({
-            stateFlowId,
             reducedProjection,
             event,
           }),
         )
-        return wrappedReducedProjection
+        return trackedReducedProjection
       }
 
       trackingSubject.next(
@@ -36,13 +37,18 @@ export const wrapReducedProjection = (
         }),
       )
 
-      return wrapReducedProjection(
-        nextReducedProjection,
-        stateFlowId,
-        trackingSubject,
-      )
+      const {
+        tracking$: nextReducedProjectionTracking$,
+        reducedProjection: trackedNextReducedProjection,
+      } = wrapReducedProjection(nextReducedProjection)
+
+      nextReducedProjectionTracking$.subscribe(trackingSubject)
+      return trackedNextReducedProjection
     },
   }
 
-  return wrappedReducedProjection
+  return {
+    tracking$: trackingSubject,
+    reducedProjection: trackedReducedProjection,
+  }
 }

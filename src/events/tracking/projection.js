@@ -1,9 +1,11 @@
 import { createEventBuilder } from '@coriolis/coriolis'
 
-export const projectionIndexed = createEventBuilder(
-  'Coriolis devtools : Projection has been indexed',
-  ({ storeId, projection }) => ({
+export const projectionCompiled = createEventBuilder(
+  'Coriolis devtools : Projection has been compiled',
+  ({ storeId, projection, reducer, initialState }) => ({
     storeId,
     projection,
+    reducer,
+    initialState,
   }),
 )

@@ -6,40 +6,46 @@ import { setValueGetter } from '../lib/object/valueGetter'
 import { trackSubscriptions } from '../lib/rx/operator/trackSubscriptions'
 
 import {
-  initialReducedProjectionCreated,
   subscribedStateFlow,
   unsubscribedStateFlow,
   connectedStateFlow,
   disconnectedStateFlow,
   accessedStateFlowValue,
   requestedNextStateFlowValue,
+  stateFlowCreated,
 } from '../events/tracking/stateFlow'
 
 import { wrapReducedProjection } from './reducedProjection'
 
-let stateFlowCount = 0
+let count = 0
+const getId = () => {
+  count += 1
+  return count
+}
+
 export const createTrackedStateFlowBuilder = () => {
   const trackingSubject = new Subject()
+
   return {
     tracking$: trackingSubject,
-    createStateFlow: (initialReducedProjection, event$, skipUntil$) => {
-      stateFlowCount += 1
-      const stateFlowId = stateFlowCount
+    createTrackedStateFlow: (initialReducedProjection, event$, skipUntil$) => {
+      const stateFlowId = getId()
+
+      const {
+        tracking$: reducedProjectionTracking$,
+        reducedProjection: trackedInitialReducedProjection,
+      } = wrapReducedProjection(initialReducedProjection)
+
+      reducedProjectionTracking$.subscribe(trackingSubject)
+
       const stateFlow = createStateFlow(
-        wrapReducedProjection(
-          initialReducedProjection,
-          stateFlowId,
-          trackingSubject,
-        ),
+        trackedInitialReducedProjection,
         event$,
         skipUntil$,
       )
 
       trackingSubject.next(
-        initialReducedProjectionCreated({
-          stateFlowId,
-          reducedProjection: initialReducedProjection,
-        }),
+        stateFlowCreated({ stateFlow, initialReducedProjection }),
       )
 
       const warnUnconnectedSubscriptions = stateFlow.stateless
@@ -49,21 +55,21 @@ export const createTrackedStateFlowBuilder = () => {
               return
             }
             console.warn(
-              `Subscribing on projection "${stateFlow.name}" while not connected`,
+              `Subscribing on projection "${stateFlow.name}" while it is not connected`,
             )
           })
 
       const trackedStateFlow = stateFlow.external.pipe(
         trackSubscriptions(
-          () => trackingSubject.next(subscribedStateFlow({ stateFlowId })),
-          () => trackingSubject.next(unsubscribedStateFlow({ stateFlowId })),
+          () => trackingSubject.next(subscribedStateFlow({ stateFlow })),
+          () => trackingSubject.next(unsubscribedStateFlow({ stateFlow })),
         ),
         warnUnconnectedSubscriptions,
       )
 
       trackedStateFlow.connect = !stateFlow.stateless
         ? () => {
-            trackingSubject.next(connectedStateFlow({ stateFlowId }))
+            trackingSubject.next(connectedStateFlow({ stateFlow }))
 
             // original connect method must be called because it does not only do a subscription
             const disconnect = stateFlow.external.connect()
@@ -72,7 +78,7 @@ export const createTrackedStateFlowBuilder = () => {
             // const unsub = simpleUnsub(trackedStateFlow.subscribe())
 
             return () => {
-              trackingSubject.next(disconnectedStateFlow({ stateFlowId }))
+              trackingSubject.next(disconnectedStateFlow({ stateFlow }))
               return disconnect()
               // return unsub()
             }
@@ -90,27 +96,29 @@ export const createTrackedStateFlowBuilder = () => {
 
       const internalGetValueTracked = () => {
         trackingSubject.next(
-          accessedStateFlowValue({ stateFlowId, internal: true }),
+          accessedStateFlowValue({ stateFlow, internal: true }),
         )
         return getValue()
       }
 
       const externalGetValueTracked = () => {
         trackingSubject.next(
-          accessedStateFlowValue({ stateFlowId, internal: false }),
+          accessedStateFlowValue({ stateFlow, internal: false }),
         )
         return getValue()
       }
 
       const internalGetNextValueTracked = (event) => {
         trackingSubject.next(
-          requestedNextStateFlowValue({ stateFlowId, event, internal: true }),
+          requestedNextStateFlowValue({ stateFlow, event, internal: true }),
         )
 
         return stateFlow.internal.getNextValue(event)
       }
 
       setValueGetter(trackedStateFlow, externalGetValueTracked)
+
+      // TODO: this is probably not necessary.... should be removed when checked it's not used
       trackedStateFlow.id = stateFlowId
       trackedStateFlow.name = stateFlow.name
 

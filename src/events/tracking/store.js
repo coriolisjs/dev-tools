@@ -16,7 +16,7 @@ export const storeEvent = createEventBuilder(
 
 export const storeEnded = createEventBuilder(
   'Coriolis devtools : detected an event store was ended',
-  ({ storeId }) => ({ storeId }),
+  ({ storeId } = {}) => ({ storeId }),
 )
 
 export const storeError = createEventBuilder(
