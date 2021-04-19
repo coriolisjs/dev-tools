@@ -3,8 +3,6 @@ import { createStateFlowFactory as defaultCreateStateFlowFactory } from '@coriol
 
 import { createTrackedStateFlowBuilder } from './stateFlow'
 
-import { stateFlowIndexed } from '../events/tracking/stateFlow'
-
 export const createTrackedStateFlowFactoryBuilder = (
   createStateFlowFactory = defaultCreateStateFlowFactory,
 ) => {
@@ -13,29 +11,22 @@ export const createTrackedStateFlowFactoryBuilder = (
   return {
     tracking$: trackingSubject,
     createStateFlowFactory: (event$, skipUntil) => {
-      const { tracking$, createStateFlow } = createTrackedStateFlowBuilder()
+      const {
+        tracking$: stateFlowTracking$,
+        createTrackedStateFlow,
+      } = createTrackedStateFlowBuilder()
 
-      tracking$.subscribe(trackingSubject)
+      stateFlowTracking$.subscribe(trackingSubject)
 
-      const stateFlowFactory = createStateFlowFactory(
+      const getStateFlow = createStateFlowFactory(
         event$,
         skipUntil,
-        createStateFlow,
+        createTrackedStateFlow,
       )
 
-      return (...args) => {
-        // TODO : here we could wrap projection to track.... something about compilation
-        const stateFlow = stateFlowFactory(...args)
-        trackingSubject.next(
-          stateFlowIndexed({
-            stateFlowId: stateFlow.id,
-            stateFlow: stateFlow,
-            args,
-          }),
-        )
-
-        return stateFlow
-      }
+      // this function is the "withProjection" function in effect API
+      // It will be wrapped and tracked in the effect tracking process
+      return getStateFlow
     },
   }
 }

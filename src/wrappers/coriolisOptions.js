@@ -1,14 +1,21 @@
 import { merge } from 'rxjs'
+import { map } from 'rxjs/operators'
+
 import { withSimpleStoreSignature } from '@coriolis/coriolis'
 
-import { createCoriolisDevToolsEffect } from '../effect'
-
+import { getDevtoolsTrackingObserver } from '../devtoolsStore'
+import { createDevtoolsEffect } from '../effects/devtoolsEffect'
 import { wrapEffect } from './effect'
 import { wrapErrorHandler } from './errorHandler'
 import { createTrackedStateFlowFactoryBuilder } from './stateFlowFactory'
 
+let lastStoreId = 0
+const getStoreId = () => ++lastStoreId
+
 export const wrapCoriolisOptions = withSimpleStoreSignature(
   (options, ...effects) => {
+    const storeId = getStoreId()
+
     const wrappedEffects = effects.map(wrapEffect)
 
     const {
@@ -21,14 +28,26 @@ export const wrapCoriolisOptions = withSimpleStoreSignature(
       errorHandler: wrappedErrorHandler,
     } = wrapErrorHandler(options.errorHandler)
 
-    const devtoolsEffect = createCoriolisDevToolsEffect(
+    const { tracking$: storeTracking$, devtoolsEffect } = createDevtoolsEffect(
       options.storeName,
-      merge(
-        stateFlowTracking$,
-        errorTracking$,
-        ...wrappedEffects.map(({ tracking$ }) => tracking$),
-      ),
     )
+
+    // Here trackingObserver could send events via http, websocket or any other solution
+    const trackingObserver = getDevtoolsTrackingObserver()
+
+    merge(
+      storeTracking$,
+      stateFlowTracking$,
+      errorTracking$,
+      ...wrappedEffects.map(({ tracking$ }) => tracking$),
+    )
+      .pipe(
+        map((event) => ({
+          ...event,
+          payload: { ...event.payload, storeId },
+        })),
+      )
+      .subscribe(trackingObserver)
 
     return {
       ...options,

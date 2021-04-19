@@ -1,12 +1,10 @@
 import { createEventBuilder } from '@coriolis/coriolis'
 
-export const stateFlowIndexed = createEventBuilder(
-  'Coriolis devtools : StateFlow has been linked with a projection or equivalent',
-  ({ storeId, stateFlowId, stateFlow, args }) => ({
+export const stateFlowCreated = createEventBuilder(
+  'Coriolis devtools : StateFlow has been created',
+  ({ storeId, stateFlow }) => ({
     storeId,
-    stateFlowId,
     stateFlow,
-    args,
   }),
 )
 

@@ -9,3 +9,12 @@ export const effectRemoved = createEventBuilder(
   `Coriolis devtools : An effect has been removed from it's store`,
   (storeId, effect) => ({ storeId, effect }),
 )
+
+export const withProjectionCalled = createEventBuilder(
+  'Coriolis devtools : Projection has been used',
+  ({ storeId, projection, stateFlow }) => ({
+    storeId,
+    projection,
+    stateFlow,
+  }),
+)
