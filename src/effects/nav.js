@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs'
 
-import { defaultViewName } from '../projections/defaultViewName'
-import { currentViewName } from '../projections/currentViewName'
-import { replacementViewName } from '../projections/replacementViewName'
+import { defaultViewName } from '../projections/ui/defaultViewName'
+import { currentViewName } from '../projections/ui/currentViewName'
+import { replacementViewName } from '../projections/ui/replacementViewName'
 
 import { viewChanged } from '../events/ui'
 

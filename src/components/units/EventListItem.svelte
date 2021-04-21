@@ -1,7 +1,7 @@
 <script>
   import { withProjection, createDispatch } from '@coriolis/coriolis-svelte'
 
-  import { selectedTimingType } from '../../projections/selectedTimingType'
+  import { selectedTimingType } from '../../projections/ui/selectedTimingType'
   import { timingTypeSelected, selectedEventListItem } from '../../events/ui'
 
   export let item
