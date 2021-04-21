@@ -1,5 +1,5 @@
 <script>
-  import { isDevtoolsOpen } from '../../projections/isDevtoolsOpen'
+  import { isDevtoolsOpen } from '../../projections/ui/isDevtoolsOpen'
   import { devtoolsOpened } from '../../events/ui'
 
   import NavButton from './NavButton.svelte'

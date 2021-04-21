@@ -1,4 +1,4 @@
-import { devtoolsOpened, devtoolsClosed } from '../events/ui'
+import { devtoolsOpened, devtoolsClosed } from '../../events/ui'
 
 export const isDevtoolsOpen = ({ useEvent }) => (
   useEvent(devtoolsOpened, devtoolsClosed),

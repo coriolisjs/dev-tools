@@ -4,7 +4,7 @@
   import * as componentIndex from './views/componentIndex'
   import DevToolsButton from './units/DevToolsButton.svelte'
 
-  import { enabledViewName } from '../projections/enabledViewName'
+  import { enabledViewName } from '../projections/ui/enabledViewName'
 
   const CurrentView$ = withProjection(enabledViewName)
 </script>
