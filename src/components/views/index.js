@@ -15,4 +15,8 @@ export const views = [
     name: 'EventTypeList',
     longname: "Liste des types d' event",
   },
+  {
+    name: 'EffectList',
+    longname: 'Liste des effets',
+  },
 ]

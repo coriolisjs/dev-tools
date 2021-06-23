@@ -136,6 +136,8 @@
     nav {
       padding-top: 10px;
       margin-bottom: 10px;
+      overflow-x: auto;
+      white-space: nowrap;
     }
 
     :global(.nav-button) {
