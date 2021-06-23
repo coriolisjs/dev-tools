@@ -1,36 +1,65 @@
-import { produce, original } from 'immer'
-import { set } from 'immer/dist/internal'
+import { produce } from 'immer'
 
-import { stateFlowIndexed /*, initialReducedProjectionCreated, nextReducedProjectionCreated*/ } from '../events/tracking/stateFlow'
+import { stateFlowCreated } from '../events/tracking/stateFlow'
 import { get } from '../lib/object/get'
+import { set } from '../lib/object/set'
 import { currentStoreId } from './currentStoreId'
 
 const reduceStateFlowsIndex = (
   state = {},
-  { type, payload: { storeId, stateFlowId, stateFlow, args } },
+  { type, payload: { storeId, stateFlow } },
 ) => {
   switch (type) {
-    case stateFlowIndexed.toString():
+    case stateFlowCreated.toString():
       state = state || {}
       state.storeId = storeId
-      state.stateFlowId = stateFlowId
       state.stateFlow = stateFlow
       state.name = (stateFlow && stateFlow.name) || 'unnamed'
-      state.args = args
       break
   }
 
   return state
 }
 
-const allStateFlowsIndex = ({ useState, useEvent }) => (
+let previousId = 0
+const createId = () => {
+  previousId = previousId + 1
+
+  return previousId
+}
+
+export const stateFlowIdIndex = ({ useState, useEvent }) => (
+  useState(new Map()),
+  useEvent(stateFlowCreated),
+  (index, event) => {
+    if (index.has(event.payload.stateFlow)) {
+      return index
+    }
+
+    const newIndex = new Map(index)
+    newIndex.set(event.payload.stateFlow, createId())
+    return newIndex
+  }
+)
+
+const allStateFlowsIndex = ({ useState, useEvent, useProjection }) => (
   useState({}),
-  useEvent(stateFlowIndexed),
-  produce((indexDraft, event) =>
-    set(indexDraft, event.payload.storeId, event.payload.stateFlowId, reduceStateFlowsIndex(
-      get(indexDraft, event.payload.storeId, event.payload.stateFlowId),
-      event,
-    ))
+  useProjection(stateFlowIdIndex),
+  useEvent(stateFlowCreated),
+  produce((indexDraft, idsIndex, event) =>
+    set(
+      indexDraft,
+      event.payload.storeId,
+      idsIndex.get(event.payload.stateFlow),
+      reduceStateFlowsIndex(
+        get(
+          indexDraft,
+          event.payload.storeId,
+          idsIndex.get(event.payload.stateFlow),
+        ),
+        event,
+      ),
+    ),
   )
 )
 
@@ -38,12 +67,6 @@ const stateFlowsIndex = ({ useProjection }) => (
   useProjection(allStateFlowsIndex),
   useProjection(currentStoreId),
   (fullIndex, storeId) => get(fullIndex, storeId) || {}
-)
-
-const storeStateFlowIdsIndex = ({ useState, useEvent }) => (
-  useState({}),
-  useEvent(stateFlowIndexed),
-  (index, event) => index[event.payload.storeId] = (index[event.payload.storeId] || []).concat(event.payload.)
 )
 
 export const stateFlowList = ({ useProjection }) => (
