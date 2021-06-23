@@ -16,6 +16,13 @@ export const wrapCoriolisOptions = withSimpleStoreSignature(
   (options, ...effects) => {
     const storeId = getStoreId()
 
+    // Here trackingObserver could send events via http, websocket or any other solution
+    const trackingObserver = getDevtoolsTrackingObserver()
+
+    const { tracking$: storeTracking$, devtoolsEffect } = createDevtoolsEffect(
+      options.storeName,
+    )
+
     const wrappedEffects = effects.map(wrapEffect)
 
     const {
@@ -27,13 +34,6 @@ export const wrapCoriolisOptions = withSimpleStoreSignature(
       tracking$: errorTracking$,
       errorHandler: wrappedErrorHandler,
     } = wrapErrorHandler(options.errorHandler)
-
-    const { tracking$: storeTracking$, devtoolsEffect } = createDevtoolsEffect(
-      options.storeName,
-    )
-
-    // Here trackingObserver could send events via http, websocket or any other solution
-    const trackingObserver = getDevtoolsTrackingObserver()
 
     merge(
       storeTracking$,
