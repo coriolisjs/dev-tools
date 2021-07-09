@@ -1,6 +1,6 @@
 {
   "name": "@coriolis/dev-tools",
-  "version": "1.0.0-alpha2",
+  "version": "1.0.0-alpha3",
   "description": "Dev tools for coriolis",
   "license": "GPL-3.0",
   "author": "Nicolas Deveaud",
