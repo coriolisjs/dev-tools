@@ -13,7 +13,7 @@ export const nav = ({ addSource, withProjection, dispatch }) => {
   const defaultViewName$ = withProjection(defaultViewName)
 
   const removeSource = addSource(
-    Observable.create((observer) => {
+    new Observable((observer) => {
       if (!currentViewName$.value) {
         observer.next(
           viewChanged(defaultViewName$.value || UNDEFINED_VIEW_NAME),
