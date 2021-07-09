@@ -66,6 +66,17 @@ export const storeAdded = createEventBuilder(
   'Coriolis devtools registered new event store',
   ({ storeId, storeName, snapshot$ }) => ({ storeId, storeName, snapshot$ }),
 )
+
+export const storeEnded = createEventBuilder(
+  'Coriolis devtools detected an event store was ended',
+  ({ storeId }) => ({ storeId }),
+)
+
+export const storeError = createEventBuilder(
+  'Coriolis devtools detected an event store global error',
+  ({ storeId, error }) => ({ storeId, error }),
+)
+
 export const currentStoreChanged = createEventBuilder(
   'Coriolis devtools current event store have been changed',
   (storeId) => storeId,

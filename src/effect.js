@@ -4,7 +4,7 @@ import { createStore, snapshot } from '@coriolis/coriolis'
 
 import { storage } from './effects/storage'
 import { createUI } from './effects/ui'
-import { storeEvent, storeAdded } from './events'
+import { storeEvent, storeAdded, storeEnded } from './events'
 
 let destroyDevtoolsStore
 const initDevtoolsEventStore = () => {
@@ -38,7 +38,9 @@ const initDevtoolsEventStore = () => {
     )
 
     return () => {
-      aggregatorEventsSubscription.unsubscribe()
+      devtoolsDispatch(storeEnded({ storeId }))
+      // unsubscribe this later so we can still catch store error events
+      setTimeout(() => aggregatorEventsSubscription.unsubscribe(), 1000)
       pastEventsSubscription.unsubscribe()
       eventsSubscription.unsubscribe()
     }

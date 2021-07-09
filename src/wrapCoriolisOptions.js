@@ -13,6 +13,7 @@ import {
   projectionSetup,
   projectionCalled,
   aggregatorCalled,
+  storeError,
 } from './events'
 import { lossless } from './lib/rx/operator/lossless'
 import { withValueGetter } from './lib/object/valueGetter'
@@ -159,6 +160,17 @@ export const wrapCoriolisOptions = withSimpleStoreSignature(
     options.aggregatorFactory = createAggregatorFactory(
       createTrackingAggregatorFactory(storeId, aggregatorEvents),
     )
+
+    const originalErrorHandler =
+      options.errorHandler ||
+      ((error) => {
+        throw error
+      })
+
+    options.errorHandler = (error) => {
+      aggregatorEvents.next(storeError({ storeId, error }))
+      originalErrorHandler(error)
+    }
 
     return options
   },
