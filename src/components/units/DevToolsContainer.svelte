@@ -1,9 +1,9 @@
 <script>
   import { withProjection, createDispatch } from '@coriolis/coriolis-svelte'
-  import { lastPayloadOfType } from '@coriolis/parametered-projection'
 
-  import { viewList } from '../../projections/viewList'
-  import { isDevtoolsOpen } from '../../projections/isDevtoolsOpen'
+  import { viewList } from '../../projections/ui/viewList'
+  import { isDevtoolsOpen } from '../../projections/ui/isDevtoolsOpen'
+  import { panelWidth } from '../../projections/ui/panelWidth'
   import { devtoolsClosed, panelWidthChanged } from '../../events/ui'
 
   import NavButton from './NavButton.svelte'
@@ -12,7 +12,7 @@
   import { rafThrottle } from '../../lib/browser/rafThrottle'
 
   const views$ = withProjection(viewList)
-  const panelWidth$ = withProjection(lastPayloadOfType(panelWidthChanged))
+  const panelWidth$ = withProjection(panelWidth)
 
   const setPanelWidth = createDispatch(panelWidthChanged)
 

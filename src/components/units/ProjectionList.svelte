@@ -1,11 +1,11 @@
 <script>
   import { withProjection } from '@coriolis/coriolis-svelte'
 
-  import { projectionsList } from '../../projections/projectionsList.js'
+  import { projectionList } from '../../projections/projectionList.js'
 
   import ProjectionListItem from './ProjectionListItem.svelte'
 
-  const projectionsList$ = withProjection(projectionsList)
+  const projectionList$ = withProjection(projectionList)
 </script>
 
 <style lang="scss">
@@ -18,7 +18,7 @@
 </style>
 
 <ul class="content">
-{#each $projectionsList$ as projectionState (projectionState.projectionId)}
+{#each $projectionList$ as projectionState (projectionState.id)}
   <ProjectionListItem {...projectionState} />
 {/each}
 </ul>

@@ -1,7 +1,7 @@
 <script>
   import { withProjection, createDispatch } from '@coriolis/coriolis-svelte'
 
-  import { eventListFilter } from '../../projections/eventListFilter'
+  import { eventListFilter } from '../../projections/ui/eventListFilter'
   import { eventListFilterChange } from '../../events/ui'
 
   const filter$ = withProjection(eventListFilter)

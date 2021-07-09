@@ -1,4 +1,4 @@
-const setProp = (obj, prop, value) => {
+const setProp = (obj = {}, prop, value) => {
   if (obj[prop] === value) {
     return obj
   }
