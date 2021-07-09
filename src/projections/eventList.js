@@ -9,6 +9,8 @@ import {
   aggregatorCreated,
   storeEnded,
   storeError,
+  commandExecuted,
+  commandCompleted,
 } from '../events'
 
 import { currentStoreId } from './currentStoreId'
@@ -37,6 +39,8 @@ const eventListItem = ({
   error: isError,
   isPastEvent,
   projectionCalls,
+  isProjectionInit: title.includes('Init projection'),
+  isCommand: typeof payload === 'function',
 
   date: new Date(timestamp).toLocaleString(),
   timestamp: timestamp,
@@ -108,6 +112,40 @@ const mapStoreErrorToEventListItem = (event, previousListItem, firstListItem) =>
     firstListItem,
   })
 
+const mapCommandExecutedToEventListItem = (
+  event,
+  previousListItem,
+  firstListItem,
+) =>
+  eventListItem({
+    title: `Command executed`,
+    payload: event.payload.command,
+    isError: false,
+    isPastEvent: false,
+    projectionCalls: [],
+
+    timestamp: event.meta.timestamp,
+    previousListItem,
+    firstListItem,
+  })
+
+const mapCommandCompletedToEventListItem = (
+  event,
+  previousListItem,
+  firstListItem,
+) =>
+  eventListItem({
+    title: `Command completed`,
+    payload: event.payload.command,
+    isError: false,
+    isPastEvent: false,
+    projectionCalls: [],
+
+    timestamp: event.meta.timestamp,
+    previousListItem,
+    firstListItem,
+  })
+
 const addProjectionCall = (
   lastEventListItem,
   args,
@@ -131,6 +169,8 @@ const fullEventList = ({ useState, useEvent, useProjection }) => (
   useEvent(
     projectionCalled,
     storeEvent,
+    commandExecuted,
+    commandCompleted,
     aggregatorCreated,
     storeEnded,
     storeError,
@@ -207,6 +247,28 @@ const fullEventList = ({ useState, useEvent, useProjection }) => (
         ]
         break
       }
+
+      case commandExecuted.toString():
+        newEventlist = unshift(
+          eventList,
+          mapCommandExecutedToEventListItem(
+            event,
+            first(eventList),
+            last(eventList),
+          ),
+        )
+        break
+
+      case commandCompleted.toString():
+        newEventlist = unshift(
+          eventList,
+          mapCommandCompletedToEventListItem(
+            event,
+            first(eventList),
+            last(eventList),
+          ),
+        )
+        break
 
       default:
         return lists
