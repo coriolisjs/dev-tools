@@ -4,7 +4,7 @@ import { defaultViewName } from '../projections/defaultViewName'
 import { currentViewName } from '../projections/currentViewName'
 import { replacementViewName } from '../projections/replacementViewName'
 
-import { viewChanged } from '../events'
+import { viewChanged } from '../events/ui'
 
 const UNDEFINED_VIEW_NAME = 'UndefinedView'
 
@@ -13,7 +13,7 @@ export const nav = ({ addSource, withProjection, dispatch }) => {
   const defaultViewName$ = withProjection(defaultViewName)
 
   const removeSource = addSource(
-    Observable.create((observer) => {
+    new Observable((observer) => {
       if (!currentViewName$.value) {
         observer.next(
           viewChanged(defaultViewName$.value || UNDEFINED_VIEW_NAME),

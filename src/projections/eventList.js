@@ -1,118 +1,202 @@
-import { lastPayloadOfType } from '@coriolis/parametered-projection'
-
 import { first } from '../lib/array/first'
 import { last } from '../lib/array/last'
 import { unshift } from '../lib/array/unshift'
 import { get } from '../lib/object/get'
 
-import {
-  storeEvent,
-  projectionCalled,
-  selectedEventListItem,
-  aggregatorCreated,
-} from '../events'
+import { storeEvent, storeEnded, storeError } from '../events/tracking/store'
+
+import { commandExecuted, commandCompleted } from '../events/tracking/command'
 
 import { currentStoreId } from './currentStoreId'
-import { fullProjectionsIndex } from './projectionsList'
 
 const getTimestampDelta = (timestamp2, timestamp1) =>
   timestamp1 ? timestamp2 - timestamp1 : 0
 
-const createEventListItem = (
-  event,
+const eventListItem = ({
+  title,
+  payload,
+  meta,
+  isError,
   isPastEvent,
-  previousEvent,
-  firstEvent,
-) => ({
-  type: event.type,
-  payload: event.payload,
-  meta: event.meta,
-  error: event.error,
+  projectionCalls,
+  timestamp,
+  previousListItem,
+  firstListItem,
+}) => ({
+  type: title,
+  payload,
+  meta,
+  error: isError,
   isPastEvent,
-  projectionCalls: [],
+  projectionCalls,
+  isProjectionInit: title.includes('Init projection'),
+  isCommand: typeof payload === 'function',
 
-  date: new Date(event.meta.timestamp).toLocaleString(),
-  timestamp: event.meta.timestamp,
-  deltaN: getTimestampDelta(
-    event.meta.timestamp,
-    get(previousEvent, 'timestamp'),
-  ),
-  delta0: getTimestampDelta(event.meta.timestamp, get(firstEvent, 'timestamp')),
-  rank: (get(previousEvent, 'rank') || 0) + 1,
+  date: new Date(timestamp).toLocaleString(),
+  timestamp: timestamp,
+  deltaN: getTimestampDelta(timestamp, get(previousListItem, 'timestamp')),
+  delta0: getTimestampDelta(timestamp, get(firstListItem, 'timestamp')),
+  rank: (get(previousListItem, 'rank') || 0) + 1,
 })
 
-export const eventListSelectedEvent = lastPayloadOfType(selectedEventListItem)
+const mapStoreEventToEventListItem = (
+  event,
+  isPastEvent,
+  previousListItem,
+  firstListItem,
+) =>
+  eventListItem({
+    title: event.type,
+    payload: event.payload,
+    meta: event.meta,
+    isError: event.error,
+    isPastEvent,
+    projectionCalls: [],
 
-const ifUndefined = (value, defaultValue) =>
-  value === undefined || value === null ? defaultValue : value
+    timestamp: event.meta.timestamp,
+    previousListItem,
+    firstListItem,
+  })
+
+const mapStoreEndedToEventListItem = (event, previousListItem, firstListItem) =>
+  eventListItem({
+    title: `Store ended`,
+    payload: '',
+    isError: false,
+    isPastEvent: false,
+    projectionCalls: [],
+
+    timestamp: event.meta.timestamp,
+    previousListItem,
+    firstListItem,
+  })
+
+const mapStoreErrorToEventListItem = (event, previousListItem, firstListItem) =>
+  eventListItem({
+    title: `Store error`,
+    payload: event.payload.error,
+    isError: true,
+    isPastEvent: false,
+    projectionCalls: [],
+
+    timestamp: event.meta.timestamp,
+    previousListItem,
+    firstListItem,
+  })
+
+const mapCommandExecutedToEventListItem = (
+  event,
+  previousListItem,
+  firstListItem,
+) =>
+  eventListItem({
+    title: `Command executed`,
+    payload: event.payload.command,
+    isError: false,
+    isPastEvent: false,
+    projectionCalls: [],
+
+    timestamp: event.meta.timestamp,
+    previousListItem,
+    firstListItem,
+  })
+
+const mapCommandCompletedToEventListItem = (
+  event,
+  previousListItem,
+  firstListItem,
+) =>
+  eventListItem({
+    title: `Command completed`,
+    payload: event.payload.command,
+    isError: false,
+    isPastEvent: false,
+    projectionCalls: [],
+
+    timestamp: event.meta.timestamp,
+    previousListItem,
+    firstListItem,
+  })
 
 const fullEventList = ({ useState, useEvent, useProjection }) => (
   useState({}),
-  useEvent(projectionCalled, storeEvent, aggregatorCreated),
-  useProjection(fullProjectionsIndex),
-  (lists, event, projectionIndexes) => {
+  useEvent(
+    storeEvent,
+    commandExecuted,
+    commandCompleted,
+    storeEnded,
+    storeError,
+  ),
+  (lists, event) => {
     const {
       payload: { storeId },
     } = event
     const eventList = lists[storeId]
-    let newEventlist
+    let newEventlist = eventList
 
-    if (event.type === storeEvent.toString()) {
-      const {
-        payload: { event: originalEvent, isPastEvent },
-      } = event
-      newEventlist = unshift(
-        eventList,
-        createEventListItem(
-          originalEvent,
-          isPastEvent,
-          first(eventList),
-          last(eventList),
-        ),
-      )
-    } else if (event.type === aggregatorCreated.toString()) {
-      newEventlist = unshift(eventList, {
-        type: `Init projection ${event.payload.projection.name}`,
-        error: false,
-        payload: event.payload.aggregator.value,
-        isPastEvent: ifUndefined(get(first(eventList), 'isPastEvent'), true),
-        projectionCalls: [],
+    switch (event.type) {
+      case storeEvent.toString(): {
+        const {
+          payload: { event: originalEvent, isPastEvent },
+        } = event
+        newEventlist = unshift(
+          eventList,
+          mapStoreEventToEventListItem(
+            originalEvent,
+            isPastEvent,
+            first(eventList),
+            last(eventList),
+          ),
+        )
+        break
+      }
 
-        date: new Date(event.meta.timestamp).toLocaleString(),
-        timestamp: event.meta.timestamp,
-        deltaN: getTimestampDelta(
-          event.meta.timestamp,
-          get(first(eventList), 'timestamp'),
-        ),
-        delta0: getTimestampDelta(
-          event.meta.timestamp,
-          get(last(eventList), 'timestamp'),
-        ),
-        rank: (get(first(eventList), 'rank') || 0) + 1,
-      })
-    } else {
-      const {
-        payload: { storeId, projectionId, args, newState },
-      } = event
+      case storeEnded.toString():
+        newEventlist = unshift(
+          eventList,
+          mapStoreEndedToEventListItem(
+            event,
+            first(eventList),
+            last(eventList),
+          ),
+        )
+        break
 
-      const lastEvent = eventList[0]
-      const projectionData = projectionIndexes[storeId][projectionId]
+      case storeError.toString():
+        newEventlist = unshift(
+          eventList,
+          mapStoreErrorToEventListItem(
+            event,
+            first(eventList),
+            last(eventList),
+          ),
+        )
+        break
 
-      newEventlist = [
-        {
-          ...lastEvent,
-          projectionCalls: [
-            ...lastEvent.projectionCalls,
-            {
-              ...projectionData,
-              args,
-              previousState: projectionData.aggregator.value,
-              newState,
-            },
-          ],
-        },
-        ...eventList.slice(1),
-      ]
+      case commandExecuted.toString():
+        newEventlist = unshift(
+          eventList,
+          mapCommandExecutedToEventListItem(
+            event,
+            first(eventList),
+            last(eventList),
+          ),
+        )
+        break
+
+      case commandCompleted.toString():
+        newEventlist = unshift(
+          eventList,
+          mapCommandCompletedToEventListItem(
+            event,
+            first(eventList),
+            last(eventList),
+          ),
+        )
+        break
+
+      default:
+        return lists
     }
 
     return {
