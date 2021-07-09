@@ -14,7 +14,9 @@ import { eventListFilter } from '../projections/eventListFilter'
 import { currentStoreSnapshot } from '../projections/currentStoreSnapshot'
 import { projectionsList } from '../projections/projectionsList'
 
-import { viewAdded, panelWidthChanged } from '../events'
+// import { stateFlowList } from '../projections/stateFlowList'
+
+import { viewAdded, panelWidthChanged } from '../events/ui'
 
 import { nav } from './nav'
 
@@ -23,6 +25,7 @@ export const createUI = () => ({
   addSource,
   withProjection,
   dispatch,
+  event$,
 }) => {
   addSource(views.map(viewAdded))
 
@@ -37,6 +40,21 @@ export const createUI = () => ({
   withProjection(eventListFilter).connect()
   withProjection(currentStoreSnapshot).connect()
   withProjection(projectionsList).connect()
+
+  // withProjection(stateFlowList).connect()
+  // let count = 0
+  // withProjection(stateFlowList).subscribe((list) => count++ < 100 && console.log(list))
+
+  // setInterval(() => console.log(count), 3000)
+
+  let eventsCount = 0
+  event$.subscribe(() => {
+    eventsCount += 1
+
+    if (eventsCount % 100 === 0) {
+      console.log('devtools events count', eventsCount)
+    }
+  })
 
   let elementMounted = false
 

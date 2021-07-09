@@ -1,1 +1,1 @@
-export const unshift = (arr = [], item) => [item, ...arr]
+export const unshift = (arr = [], item = undefined) => [item, ...arr]

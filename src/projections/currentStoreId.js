@@ -1,4 +1,5 @@
-import { currentStoreChanged, storeAdded } from '../events'
+import { currentStoreChanged } from '../events/ui'
+import { storeAdded } from '../events/tracking/store'
 
 export const currentStoreId = ({ useState, useEvent }) => (
   useState(),
