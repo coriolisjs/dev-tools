@@ -19,4 +19,8 @@ export const views = [
     name: 'EffectList',
     longname: 'Liste des effets',
   },
+  {
+    name: 'CommandList',
+    longname: 'Liste des commandes',
+  },
 ]
