@@ -11,6 +11,7 @@ import { allEventTypeIndex } from '../projections/eventTypeList'
 import { currentStoreId } from '../projections/currentStoreId'
 import { fullProjectionsIndex } from '../projections/projectionList'
 import { storeList } from '../projections/storeList'
+import { fullEffectIndex } from '../projections/effectList'
 import { eventListSelectedItem } from '../projections/ui/eventListSelectedItem'
 import { panelWidth } from '../projections/ui/panelWidth'
 import { selectedTimingType } from '../projections/ui/selectedTimingType'
@@ -33,6 +34,7 @@ export const createUI = () => ({
   withProjection(eventListFilter).connect()
   withProjection(allEventTypeIndex).connect()
   withProjection(fullProjectionsIndex).connect()
+  withProjection(fullEffectIndex).connect()
   withProjection(panelWidth).connect()
   withProjection(eventListSelectedItem).connect()
   withProjection(selectedTimingType).connect()

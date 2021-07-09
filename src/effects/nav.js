@@ -25,6 +25,7 @@ export const nav = ({ addSource, withProjection, dispatch }) => {
     }),
   )
 
+  // In case current view is not defined, change current view
   const replaceViewSubscription = withProjection(replacementViewName).subscribe(
     (viewName) => viewName && dispatch(viewChanged(viewName)),
   )
