@@ -2,6 +2,15 @@ import { first } from '../lib/array/first'
 import { last } from '../lib/array/last'
 import { unshift } from '../lib/array/unshift'
 import { get } from '../lib/object/get'
+import { set } from '../lib/object/set'
+
+import {
+  fromStoreEvent,
+  fromStoreEnded,
+  fromStoreError,
+  fromCommandExecuted,
+  fromCommandCompleted,
+} from '../models/eventListItem'
 
 import { storeEvent, storeEnded, storeError } from '../events/tracking/store'
 
@@ -9,116 +18,53 @@ import { commandExecuted, commandCompleted } from '../events/tracking/command'
 
 import { currentStoreId } from './currentStoreId'
 
-const getTimestampDelta = (timestamp2, timestamp1) =>
-  timestamp1 ? timestamp2 - timestamp1 : 0
+const reduceEventList = (eventList = [], event) => {
+  switch (event.type) {
+    case storeEvent.toString(): {
+      const {
+        payload: { event: originalEvent, isPastEvent },
+      } = event
+      return unshift(
+        eventList,
+        fromStoreEvent(
+          originalEvent,
+          isPastEvent,
+          first(eventList),
+          last(eventList),
+        ),
+      )
+    }
 
-const eventListItem = ({
-  title,
-  payload,
-  meta,
-  isError,
-  isPastEvent,
-  projectionCalls,
-  timestamp,
-  previousListItem,
-  firstListItem,
-}) => ({
-  type: title,
-  payload,
-  meta,
-  error: isError,
-  isPastEvent,
-  projectionCalls,
-  isProjectionInit: title.includes('Init projection'),
-  isCommand: typeof payload === 'function',
+    case storeEnded.toString():
+      return unshift(
+        eventList,
+        fromStoreEnded(event, first(eventList), last(eventList)),
+      )
 
-  date: new Date(timestamp).toLocaleString(),
-  timestamp: timestamp,
-  deltaN: getTimestampDelta(timestamp, get(previousListItem, 'timestamp')),
-  delta0: getTimestampDelta(timestamp, get(firstListItem, 'timestamp')),
-  rank: (get(previousListItem, 'rank') || 0) + 1,
-})
+    case storeError.toString():
+      return unshift(
+        eventList,
+        fromStoreError(event, first(eventList), last(eventList)),
+      )
 
-const mapStoreEventToEventListItem = (
-  event,
-  isPastEvent,
-  previousListItem,
-  firstListItem,
-) =>
-  eventListItem({
-    title: event.type,
-    payload: event.payload,
-    meta: event.meta,
-    isError: event.error,
-    isPastEvent,
-    projectionCalls: [],
+    case commandExecuted.toString():
+      return unshift(
+        eventList,
+        fromCommandExecuted(event, first(eventList), last(eventList)),
+      )
 
-    timestamp: event.meta.timestamp,
-    previousListItem,
-    firstListItem,
-  })
+    case commandCompleted.toString():
+      return unshift(
+        eventList,
+        fromCommandCompleted(event, first(eventList), last(eventList)),
+      )
 
-const mapStoreEndedToEventListItem = (event, previousListItem, firstListItem) =>
-  eventListItem({
-    title: `Store ended`,
-    payload: '',
-    isError: false,
-    isPastEvent: false,
-    projectionCalls: [],
+    default:
+      return eventList
+  }
+}
 
-    timestamp: event.meta.timestamp,
-    previousListItem,
-    firstListItem,
-  })
-
-const mapStoreErrorToEventListItem = (event, previousListItem, firstListItem) =>
-  eventListItem({
-    title: `Store error`,
-    payload: event.payload.error,
-    isError: true,
-    isPastEvent: false,
-    projectionCalls: [],
-
-    timestamp: event.meta.timestamp,
-    previousListItem,
-    firstListItem,
-  })
-
-const mapCommandExecutedToEventListItem = (
-  event,
-  previousListItem,
-  firstListItem,
-) =>
-  eventListItem({
-    title: `Command executed`,
-    payload: event.payload.command,
-    isError: false,
-    isPastEvent: false,
-    projectionCalls: [],
-
-    timestamp: event.meta.timestamp,
-    previousListItem,
-    firstListItem,
-  })
-
-const mapCommandCompletedToEventListItem = (
-  event,
-  previousListItem,
-  firstListItem,
-) =>
-  eventListItem({
-    title: `Command completed`,
-    payload: event.payload.command,
-    isError: false,
-    isPastEvent: false,
-    projectionCalls: [],
-
-    timestamp: event.meta.timestamp,
-    previousListItem,
-    firstListItem,
-  })
-
-const fullEventList = ({ useState, useEvent, useProjection }) => (
+export const fullEventList = ({ useState, useEvent }) => (
   useState({}),
   useEvent(
     storeEvent,
@@ -127,83 +73,12 @@ const fullEventList = ({ useState, useEvent, useProjection }) => (
     storeEnded,
     storeError,
   ),
-  (lists, event) => {
-    const {
-      payload: { storeId },
-    } = event
-    const eventList = lists[storeId]
-    let newEventlist = eventList
-
-    switch (event.type) {
-      case storeEvent.toString(): {
-        const {
-          payload: { event: originalEvent, isPastEvent },
-        } = event
-        newEventlist = unshift(
-          eventList,
-          mapStoreEventToEventListItem(
-            originalEvent,
-            isPastEvent,
-            first(eventList),
-            last(eventList),
-          ),
-        )
-        break
-      }
-
-      case storeEnded.toString():
-        newEventlist = unshift(
-          eventList,
-          mapStoreEndedToEventListItem(
-            event,
-            first(eventList),
-            last(eventList),
-          ),
-        )
-        break
-
-      case storeError.toString():
-        newEventlist = unshift(
-          eventList,
-          mapStoreErrorToEventListItem(
-            event,
-            first(eventList),
-            last(eventList),
-          ),
-        )
-        break
-
-      case commandExecuted.toString():
-        newEventlist = unshift(
-          eventList,
-          mapCommandExecutedToEventListItem(
-            event,
-            first(eventList),
-            last(eventList),
-          ),
-        )
-        break
-
-      case commandCompleted.toString():
-        newEventlist = unshift(
-          eventList,
-          mapCommandCompletedToEventListItem(
-            event,
-            first(eventList),
-            last(eventList),
-          ),
-        )
-        break
-
-      default:
-        return lists
-    }
-
-    return {
-      ...lists,
-      [storeId]: newEventlist,
-    }
-  }
+  (lists, event) =>
+    set(
+      lists,
+      event.payload.storeId,
+      reduceEventList(lists[event.payload.storeId], event),
+    )
 )
 
 export const eventList = ({ useProjection }) => (
