@@ -1,6 +1,6 @@
 import { get } from '../lib/object/get'
 
-import { storeEvent } from '../events'
+import { storeEvent } from '../events/tracking/store'
 
 import { currentStoreId } from './currentStoreId'
 
