@@ -12,6 +12,8 @@ export const nav = ({ addSource, withProjection, dispatch }) => {
   const currentViewName$ = withProjection(currentViewName)
   const defaultViewName$ = withProjection(defaultViewName)
 
+  currentViewName$.connect()
+
   const removeSource = addSource(
     new Observable((observer) => {
       if (!currentViewName$.value) {
