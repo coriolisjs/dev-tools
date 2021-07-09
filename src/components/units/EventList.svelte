@@ -4,13 +4,13 @@
   import { withProjection } from '@coriolis/coriolis-svelte'
 
   import { filteredEventList } from '../../projections/filteredEventList'
-  import { eventListSelectedEvent } from '../../projections/eventList'
+  import { eventListSelectedItem } from '../../projections/eventListSelectedItem'
 
   import EventListItem from './EventListItem.svelte'
   import EventDetails from './EventDetails.svelte'
 
   const eventList$ = withProjection(filteredEventList)
-  const eventListSelectedEvent$ = withProjection(eventListSelectedEvent)
+  const eventListSelectedItem$ = withProjection(eventListSelectedItem)
 </script>
 
 <style lang="scss">
@@ -31,12 +31,12 @@
 <div class="eventList">
 {#if ($eventList$ && $eventList$.length)}
   <VirtualList items={$eventList$} let:item>
-    <EventListItem {item} selected={$eventListSelectedEvent$ === item} />
+    <EventListItem {item} selected={$eventListSelectedItem$ === item} />
   </VirtualList>
 {:else}
   <div class="empty">No event to display</div>
 {/if}
 </div>
-{#if $eventListSelectedEvent$}
-<EventDetails details={$eventListSelectedEvent$} />
+{#if $eventListSelectedItem$}
+<EventDetails details={$eventListSelectedItem$} />
 {/if}
