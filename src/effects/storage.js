@@ -1,4 +1,4 @@
-import { panelWidthChanged, devtoolsOpened, devtoolsClosed } from '../events'
+import { panelWidthChanged, devtoolsOpened, devtoolsClosed } from '../events/ui'
 
 export const storage = ({ addLogger, addSource }) => {
   const initialPanelWidth = window.localStorage.getItem(
