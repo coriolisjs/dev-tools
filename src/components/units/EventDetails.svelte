@@ -135,6 +135,10 @@
         </pre>
       </div>
     {/if}
+    <!--
+      We could add here a link to the details of the effect where this event came from
+      Effects have no name, but it could optionnally have one, and it could have an ID
+    -->
   </div>
   <div class="actions">
     <button class="close" on:click={close}>close</button>
