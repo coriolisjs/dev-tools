@@ -4,12 +4,12 @@
   export let projectionId
   export let name
   export let setupCalls = 0
-  export let aggregatorCalls = 0
+  export let reducedStateCount = 0
   export let cachedCalls = 0
   export let stateCalls = 0
   export let projectionCalls = 0
   export let isReducer = false
-  export let aggregator
+  export let stateFlow
 </script>
 
 <style lang="scss">
@@ -32,7 +32,7 @@
 </style>
 
 <li
-  on:click={() => console.log(projection, projectionBehavior, aggregator)}
+  on:click={() => console.log(projection, projectionBehavior, stateFlow)}
 >
   <h3>{name} ({projectionId})</h3>
   <div class="projectionType"><span class="label">type:</span> {isReducer ? 'reducer' : 'custom'}</div>
@@ -40,5 +40,5 @@
   <div class="projectionCalls"><span class="label">executions:</span> {projectionCalls}</div>
   <div class="cachedCalls"><span class="label">cached calls:</span> {cachedCalls}</div>
   <div class="stateCalls"><span class="label">state calls:</span> {stateCalls}</div>
-  <div class="totalCalls"><span class="label">total calls:</span> {aggregatorCalls}</div>
+  <div class="totalCalls"><span class="label">total calls:</span> {reducedStateCount}</div>
 </li>
