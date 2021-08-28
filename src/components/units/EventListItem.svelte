@@ -2,7 +2,7 @@
   import { withProjection, createDispatch } from '@coriolis/coriolis-svelte'
 
   import { selectedTimingType } from '../../projections/selectedTimingType'
-  import { timingTypeSelected, selectedEventListItem } from '../../events'
+  import { timingTypeSelected, selectedEventListItem } from '../../events/ui'
 
   export let item
   export let selected
@@ -14,6 +14,7 @@
   const selectEventListItem = createDispatch(() => selectedEventListItem(item))
 </script>
 
+<!-- svelte-ignore a11y-no-onchange -->
 <style lang="scss">
   .eventListItem {
     display: flex;
@@ -24,12 +25,12 @@
     background: rgba(black, .1);
     line-height: 1.5em;
 
-    &:hover {
-      background: rgba(white, .1);
-    }
-
     &.isEven {
       background: rgba(black, .2);
+    }
+
+    &:hover {
+      background: rgba(white, .1);
     }
 
     &.isPastEvent {
@@ -42,6 +43,20 @@
 
     &.isError {
       color: #f66578;
+    }
+
+    &.isCommand {
+      background: #456847;
+      padding: .1em .5em 0;
+      font-size: 0.7em;
+
+      &.isCommandEnd {
+        background: #685445;
+      }
+
+      &.isSelected {
+        background-color: rgba(24, 196, 159, 0.6);
+      }
     }
 
     &.isConnection {
@@ -93,6 +108,8 @@
   class:isEven={!(item.rank % 2)}
   class:isPastEvent={item.isPastEvent}
   class:isError={item.error}
+  class:isCommand={item.isCommand}
+  class:isCommandEnd={item.isCommand && item.type.includes('completed')}
   class:isConnection={item.type && item.type.includes('Init projection')}
   class:isSelected={selected}
   on:click={selectEventListItem}
@@ -106,7 +123,7 @@
   >
     <select
       class="timing-select"
-      on:blur={selectTimingType}
+      on:change={selectTimingType}
     >
       <option value="deltaN" selected={$selectedTimingType$ === 'deltaN'}>+{item.deltaN}ms</option>
       <option value="delta0" selected={$selectedTimingType$ === 'delta0'}>+{item.delta0}ms</option>
