@@ -27,10 +27,13 @@ export default {
       exclude: 'node_modules/**',
     }),
     svelte({
-      // enable run-time checks when not in production
-      dev: !production,
+      compilerOptions: {
+        // enable run-time checks when not in production
+        dev: !production,
+      },
 
       preprocess: autoPreprocess(),
+      emitCss: false,
     }),
 
     // If you have external dependencies installed from
