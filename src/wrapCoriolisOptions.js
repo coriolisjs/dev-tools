@@ -30,7 +30,6 @@ const getProjectionName = (projection) => {
       useState: () => {},
       useEvent: () => {},
       useProjection: () => {},
-      lazyProjection: () => {},
       useValue: () => {},
       setName: (name) => {
         foundName = name
@@ -78,7 +77,6 @@ const createTrackingAggregatorFactory = (storeId, trackingSubject) => (
       (args[0].useProjection ||
         args[0].useEvent ||
         args[0].useState ||
-        args[0].lazyProjection ||
         args[0].useValue)
     ) {
       let projectionBehavior
