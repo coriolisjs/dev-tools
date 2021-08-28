@@ -1,7 +1,7 @@
 <script>
   import { withProjection, createDispatch } from '@coriolis/coriolis-svelte'
 
-  import { selectedTimingType } from '../../projections/selectedTimingType'
+  import { selectedTimingType } from '../../projections/ui/selectedTimingType'
   import { timingTypeSelected, selectedEventListItem } from '../../events/ui'
 
   export let item
@@ -125,10 +125,11 @@
       class="timing-select"
       on:change={selectTimingType}
     >
-      <option value="deltaN" selected={$selectedTimingType$ === 'deltaN'}>+{item.deltaN}ms</option>
-      <option value="delta0" selected={$selectedTimingType$ === 'delta0'}>+{item.delta0}ms</option>
+      <option value="deltaN" selected={$selectedTimingType$ === 'deltaN'}>+{item.deltaN}</option>
+      <option value="delta0" selected={$selectedTimingType$ === 'delta0'}>+{item.delta0}</option>
       <option value="date" selected={$selectedTimingType$ === 'date'}>{item.date}</option>
       <option value="timestamp" selected={$selectedTimingType$ === 'timestamp'}>{item.timestamp}</option>
+      <option value="rank" selected={$selectedTimingType$ === 'rank'}>{item.rank}</option>
     </select>
   </div>
 </div>

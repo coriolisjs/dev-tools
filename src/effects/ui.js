@@ -1,22 +1,21 @@
-import { lastPayloadOfType } from '@coriolis/parametered-projection'
-
 import { createCustomElement } from '../lib/browser/customElement'
 import { ensureFeatures } from '../lib/browser/loadScript'
 
 import { views } from '../components/views'
 
-import { isDevtoolsOpen } from '../projections/isDevtoolsOpen'
-import { enabledViewName } from '../projections/enabledViewName'
-import { viewList } from '../projections/viewList'
-import { eventList } from '../projections/eventList'
-import { eventTypeList } from '../projections/eventTypeList'
-import { eventListFilter } from '../projections/eventListFilter'
-import { currentStoreSnapshot } from '../projections/currentStoreSnapshot'
-import { projectionsList } from '../projections/projectionsList'
+import { isDevtoolsOpen } from '../projections/ui/isDevtoolsOpen'
+import { viewList } from '../projections/ui/viewList'
+import { fullEventList } from '../projections/eventList'
+import { eventListFilter } from '../projections/ui/eventListFilter'
+import { allEventTypeIndex } from '../projections/eventTypeList'
+import { currentStoreId } from '../projections/currentStoreId'
+import { fullProjectionsIndex } from '../projections/projectionList'
+import { storeList } from '../projections/storeList'
+import { eventListSelectedItem } from '../projections/ui/eventListSelectedItem'
+import { panelWidth } from '../projections/ui/panelWidth'
+import { selectedTimingType } from '../projections/ui/selectedTimingType'
 
-// import { stateFlowList } from '../projections/stateFlowList'
-
-import { viewAdded, panelWidthChanged } from '../events/ui'
+import { viewAdded } from '../events/ui'
 
 import { nav } from './nav'
 
@@ -25,36 +24,22 @@ export const createUI = () => ({
   addSource,
   withProjection,
   dispatch,
-  event$,
 }) => {
+  withProjection(isDevtoolsOpen).connect()
+  withProjection(currentStoreId).connect()
+  withProjection(storeList).connect()
+  withProjection(viewList).connect()
+  withProjection(fullEventList).connect()
+  withProjection(eventListFilter).connect()
+  withProjection(allEventTypeIndex).connect()
+  withProjection(fullProjectionsIndex).connect()
+  withProjection(panelWidth).connect()
+  withProjection(eventListSelectedItem).connect()
+  withProjection(selectedTimingType).connect()
+
   addSource(views.map(viewAdded))
 
   addEffect(nav)
-
-  withProjection(lastPayloadOfType(panelWidthChanged)).connect()
-  withProjection(isDevtoolsOpen).connect()
-  withProjection(enabledViewName).connect()
-  withProjection(viewList).connect()
-  withProjection(eventList).connect()
-  withProjection(eventTypeList).connect()
-  withProjection(eventListFilter).connect()
-  withProjection(currentStoreSnapshot).connect()
-  withProjection(projectionsList).connect()
-
-  // withProjection(stateFlowList).connect()
-  // let count = 0
-  // withProjection(stateFlowList).subscribe((list) => count++ < 100 && console.log(list))
-
-  // setInterval(() => console.log(count), 3000)
-
-  let eventsCount = 0
-  event$.subscribe(() => {
-    eventsCount += 1
-
-    if (eventsCount % 100 === 0) {
-      console.log('devtools events count', eventsCount)
-    }
-  })
 
   let elementMounted = false
 

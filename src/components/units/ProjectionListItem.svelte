@@ -1,15 +1,18 @@
 <script>
-  export let projection
-  export let projectionBehavior = undefined
-  export let projectionId
+  // export let projectionBehavior = undefined
+  export let id
   export let name
-  export let setupCalls = 0
-  export let reducedStateCount = 0
-  export let cachedCalls = 0
-  export let stateCalls = 0
-  export let projectionCalls = 0
-  export let isReducer = false
+  export let projection
   export let stateFlow
+  // export let setupCalls = 0
+  // export let reducedStateCount = 0
+  // export let cachedCalls = 0
+  // export let stateCalls = 0
+  // export let projectionCalls = 0
+  // export let isReducer = false
+  // export let stateFlow
+
+  console.log('projection', projection)
 </script>
 
 <style lang="scss">
@@ -30,8 +33,8 @@
     }
   }
 </style>
-
-<li
+<li><h3>{name} ({id}) {stateFlow.stateless ? 'stateless' : 'statefull'}</h3></li>
+<!-- <li
   on:click={() => console.log(projection, projectionBehavior, stateFlow)}
 >
   <h3>{name} ({projectionId})</h3>
@@ -41,4 +44,4 @@
   <div class="cachedCalls"><span class="label">cached calls:</span> {cachedCalls}</div>
   <div class="stateCalls"><span class="label">state calls:</span> {stateCalls}</div>
   <div class="totalCalls"><span class="label">total calls:</span> {reducedStateCount}</div>
-</li>
+</li> -->
