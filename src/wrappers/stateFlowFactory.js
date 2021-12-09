@@ -11,10 +11,8 @@ export const createTrackedStateFlowFactoryBuilder = (
   return {
     tracking$: trackingSubject,
     createStateFlowFactory: (event$, skipUntil) => {
-      const {
-        tracking$: stateFlowTracking$,
-        createTrackedStateFlow,
-      } = createTrackedStateFlowBuilder()
+      const { tracking$: stateFlowTracking$, createTrackedStateFlow } =
+        createTrackedStateFlowBuilder()
 
       stateFlowTracking$.subscribe(trackingSubject)
 

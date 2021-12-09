@@ -30,10 +30,8 @@ export const wrapCoriolisOptions = withSimpleStoreSignature(
       createStateFlowFactory: wrappedStateFlowFactoryBuilder,
     } = createTrackedStateFlowFactoryBuilder(options.stateFlowFactoryBuilder)
 
-    const {
-      tracking$: errorTracking$,
-      errorHandler: wrappedErrorHandler,
-    } = wrapErrorHandler(options.errorHandler)
+    const { tracking$: errorTracking$, errorHandler: wrappedErrorHandler } =
+      wrapErrorHandler(options.errorHandler)
 
     merge(
       storeTracking$,

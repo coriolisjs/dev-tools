@@ -24,20 +24,20 @@ const createTrackedDispatch = (trackingSubject, effectAPI) => (event) => {
   return effectAPI.dispatch(event)
 }
 
-const createTrackedWithProjection = (trackingSubject, effectAPI) => (
-  ...args
-) => {
-  const stateFlow = effectAPI.withProjection(...args)
+const createTrackedWithProjection =
+  (trackingSubject, effectAPI) =>
+  (...args) => {
+    const stateFlow = effectAPI.withProjection(...args)
 
-  trackingSubject.next(
-    withProjectionCalled({
-      projection: args,
-      stateFlow: stateFlow,
-    }),
-  )
+    trackingSubject.next(
+      withProjectionCalled({
+        projection: args,
+        stateFlow: stateFlow,
+      }),
+    )
 
-  return stateFlow
-}
+    return stateFlow
+  }
 
 export const wrapEffect = (effect) => {
   const trackingSubject = new Subject()
