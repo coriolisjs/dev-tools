@@ -27,8 +27,8 @@
     "tools",
     "debug"
   ],
-  "main": "dist/cjs/index.js",
   "sideEffects": false,
+  "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "files": [
     "dist"
@@ -38,13 +38,11 @@
     "clear": "rm -rf dist",
     "build": "rollup -c",
     "autobuild": "rollup -c -w",
-    "dev": "run-p start:dev autobuild",
-    "start": "sirv public --single",
-    "start:dev": "sirv public --single --dev",
+    "dev": "run-p start autobuild",
+    "start": "sirv public --single --dev",
     "lint": "eslint .",
     "pretty": "prettier './**/{*.{js?(on),md,?(s)css,html},.*.{js?(on),md,?(s)css,html}}' --write && eslint . --fix",
     "upgrade": "npm outdated --parseable --depth=0 | cut -d: -f4 | xargs npm install",
-    "dep-link": "npm link @coriolis/coriolis @coriolis/coriolis-svelte @coriolis/parametered-projection",
     "prepublishOnly": "npm run lint && npm outdated && npm run clear && npm run build && git tag ${VERSION} && git push origin ${VERSION}",
     "publish:local": "VERSION=${npm_package_version}-local npm publish --registry http://localhost:4873",
     "publish:npm": "VERSION=${npm_package_version} npm publish --registry https://registry.npmjs.org --access public"
