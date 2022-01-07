@@ -1,3 +1,13 @@
-import { createDemoApp } from './demoApp'
+import Demo from './Demo.svelte'
 
-createDemoApp()
+import * as fixtures from './fixtures'
+
+const main = () =>
+  new Demo({
+    target: document.body,
+    props: {
+      fixtures,
+    },
+  })
+
+main()

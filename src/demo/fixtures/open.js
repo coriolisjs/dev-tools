@@ -1,6 +1,6 @@
-import { views } from '../components/views/index'
+import { views } from '../../components/views/index'
 
-const open = {
+export const open = {
   enabledViewName: 'EventList',
   viewList: views,
   filteredEventList: [
@@ -105,35 +105,4 @@ const open = {
     undefined,
   'Last payload of type "Coriolis devtools : timing type for event display have been selected"':
     undefined,
-}
-
-export const fixtures = {
-  open,
-  openWithEventSelected: {
-    ...open,
-    'Last payload of type "Coriolis devtools : item selected in event list"': {
-      type: 'event',
-      payload: { any: 'data' },
-      meta: {},
-      error: false,
-      isPastEvent: false,
-      projectionCalls: [],
-      isProjectionInit: false,
-      isCommand: false,
-      date: new Date().toLocaleString(),
-      timestamp: new Date().getTime(),
-      deltaN: '234ms',
-      delta0: '3j',
-      rank: 1,
-    },
-  },
-  openWithTimeingTypeSelected: {
-    ...open,
-    'Last payload of type "Coriolis devtools : timing type for event display have been selected"':
-      'timestamp',
-  },
-  closed: {
-    enabledViewName: undefined,
-    isDevtoolsOpen: false,
-  },
 }
