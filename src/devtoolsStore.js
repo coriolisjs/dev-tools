@@ -1,4 +1,4 @@
-import { identity, Subject } from 'rxjs'
+import { identity } from 'rxjs'
 import { map } from 'rxjs/operators'
 
 import { produce } from 'immer'
@@ -9,25 +9,20 @@ import { storage } from './effects/storage'
 import { createUI } from './effects/ui'
 
 export const createDevtoolsStore = () => {
-  const trackingSubject = new Subject()
-  const destroyDevtoolsStore = createStore(
+  const store = createStore(
     { eventEnhancer: map(produce(identity)) },
     createUI(),
     storage,
-    ({ dispatch }) => trackingSubject.subscribe(dispatch),
   )
 
-  return {
-    trackingObserver: (trackingEvent) => trackingSubject.next(trackingEvent),
-    destroyDevtoolsStore,
-  }
+  return store
 }
 
-let devtoolsTrackingObserver
-export const getDevtoolsTrackingObserver = () => {
-  if (!devtoolsTrackingObserver) {
-    ;({ trackingObserver: devtoolsTrackingObserver } = createDevtoolsStore())
+let devtoolsStore
+export const getDevtoolsStore = () => {
+  if (!devtoolsStore) {
+    devtoolsStore = createDevtoolsStore()
   }
 
-  return devtoolsTrackingObserver
+  return devtoolsStore
 }

@@ -1,2 +1,2 @@
-export { wrapCoriolisOptions } from './wrappers/coriolisOptions'
 export { createDevtoolsStore } from './devtoolsStore'
+export { withDevTools, wrapCoriolisOptions } from './withDevTools'
