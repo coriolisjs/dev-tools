@@ -28,6 +28,9 @@ export default {
       },
 
       preprocess: preprocess({
+        scss: {
+          prependData: `@import 'src/styles/colors.scss';`,
+        },
         postcss: {
           plugins: [postcssPresetEnv()],
         },

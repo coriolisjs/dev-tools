@@ -1,5 +1,8 @@
 import { views } from '../../components/views/index'
 
+let currentRank = 1
+const rank = () => currentRank++
+
 export const open = {
   enabledViewName: 'EventList',
   viewList: views,
@@ -17,7 +20,37 @@ export const open = {
       timestamp: new Date().getTime(),
       deltaN: '234ms',
       delta0: '3j',
-      rank: 1,
+      rank: rank(),
+    },
+    {
+      type: 'event',
+      payload: { any: 'data' },
+      meta: {},
+      error: false,
+      isPastEvent: false,
+      projectionCalls: [],
+      isProjectionInit: false,
+      isCommand: false,
+      date: new Date().toLocaleString(),
+      timestamp: new Date().getTime(),
+      deltaN: '234ms',
+      delta0: '3j',
+      rank: rank(),
+    },
+    {
+      type: 'event',
+      payload: { any: 'data' },
+      meta: {},
+      error: false,
+      isPastEvent: false,
+      projectionCalls: [],
+      isProjectionInit: false,
+      isCommand: false,
+      date: new Date().toLocaleString(),
+      timestamp: new Date().getTime(),
+      deltaN: '234ms',
+      delta0: '3j',
+      rank: rank(),
     },
     {
       type: 'Command executed',
@@ -32,7 +65,7 @@ export const open = {
       timestamp: new Date().getTime(),
       deltaN: '234ms',
       delta0: '3j',
-      rank: 2,
+      rank: rank(),
     },
     {
       type: 'Command completed',
@@ -47,7 +80,7 @@ export const open = {
       timestamp: new Date().getTime(),
       deltaN: '234ms',
       delta0: '3j',
-      rank: 3,
+      rank: rank(),
     },
     {
       type: 'Store error',
@@ -62,7 +95,7 @@ export const open = {
       timestamp: new Date().getTime(),
       deltaN: '234ms',
       delta0: '3j',
-      rank: 4,
+      rank: rank(),
     },
     {
       type: 'Store ended',
@@ -77,7 +110,7 @@ export const open = {
       timestamp: new Date().getTime(),
       deltaN: '234ms',
       delta0: '3j',
-      rank: 5,
+      rank: rank(),
     },
     {
       type: 'past event',
@@ -92,7 +125,7 @@ export const open = {
       timestamp: new Date().getTime(),
       deltaN: '234ms',
       delta0: '3j',
-      rank: 6,
+      rank: rank(),
     },
   ],
   'Last payload of type "Coriolis devtools : panel width changed"': 600,

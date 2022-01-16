@@ -90,7 +90,7 @@
     bottom: 0;
     box-sizing: border-box;
     width: 500px;
-    background: rgb(85, 85, 85);
+    background: $color-primary-darker;
     color: rgb(235, 235, 227);
     padding: 3px 0 3px 6px;
     display: flex;
@@ -121,14 +121,14 @@
       .headerTop {
         margin: -3px 0 0 -6px;
         padding: 1px 10px 0 10px;
-        background: rgba(white, .2);
+        background: $color-primary-dark;
       }
 
       :global(h2) {
-        color: rgb(223, 223, 223);
+        color: $color-primary-lightest;
         margin: 5px 0 0 20px;
         padding: 0;
-        // text-align: center;
+        /* text-align: center; */
         font-size: 1.2em;
       }
     }
@@ -144,31 +144,34 @@
       cursor: pointer;
       margin: 1px 2px 0;
       padding: 4px 8px 0;
-      background: rgba(white, .5);
+      background: $color-primary-lighter;
       border-width: 1px 1px 0;
       border-style: solid;
-      border-color: gray;
+      border-color: $color-primary-darker;
       border-radius: 8px 8px 0 0;
+      color: $color-primary-darker;
+    }
 
-      &.coriolis-dev-tools-button-close {
-        display: block;
-        position: absolute;
-        left: -41px;
-        bottom: 35px;
-        cursor: pointer;
-        background-color: #bbb;
-        transform: rotate(-90deg);
-        font-size: .9em;
-      }
+    :global(.nav-button:hover) {
+      background: $color-primary-lighter-hover;
+    }
 
-      &[disabled] {
-        border-width: 2px 1px 0;
-        border-color: silver;
-        cursor: default;
-        background: #555;
-        color: rgb(223, 223, 223);
-        font-weight: bold;
-      }
+    :global(.nav-button[disabled]) {
+      border-width: 2px 1px 0;
+      border-color: $color-primary-lighter;
+      cursor: default;
+      background: $color-primary-darker;
+      color: $color-primary-lighter;
+      font-weight: bold;
+    }
+
+    :global(.coriolis-dev-tools-button-close) {
+      display: block;
+      position: absolute;
+      left: -41px;
+      bottom: 35px;
+      transform: rotate(-90deg);
+      font-size: .9em;
     }
   }
 </style>
