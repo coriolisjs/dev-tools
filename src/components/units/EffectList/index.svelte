@@ -3,7 +3,7 @@
 
   import EffectListItem from './EffectListItem.svelte'
 
-  import { effectList } from '../../projections/effectList'
+  import { effectList } from '../../../projections/effectList'
 
   const effectsList$ = withProjection(effectList)
 </script>

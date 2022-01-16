@@ -1,5 +1,5 @@
 <script>
-  import EffectList from '../units/EffectList.svelte'
+  import EffectList from '../units/EffectList/index.svelte'
   import DevToolsContainer from '../units/DevToolsContainer/index.svelte'
 </script>
 
