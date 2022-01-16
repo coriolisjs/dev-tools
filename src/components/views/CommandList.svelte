@@ -1,5 +1,5 @@
 <script>
-  import CommandList from '../units/CommandList.svelte'
+  import CommandList from '../units/CommandList/index.svelte'
   import DevToolsContainer from '../units/DevToolsContainer/index.svelte'
 </script>
 
