@@ -1,7 +1,7 @@
 <script>
   import { withProjection } from '@coriolis/coriolis-svelte'
 
-  import { eventTypeList } from '../../projections/eventTypeList'
+  import { eventTypeList } from '../../../projections/eventTypeList'
 
   import EventTypeListItem from './EventTypeListItem.svelte'
 
