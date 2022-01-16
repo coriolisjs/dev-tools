@@ -1,6 +1,6 @@
 <script>
   import DevToolsContainer from '../units/DevToolsContainer/index.svelte'
-  import ProjectionList from '../units/ProjectionList.svelte'
+  import ProjectionList from '../units/ProjectionList/index.svelte'
 </script>
 
 <DevToolsContainer>
