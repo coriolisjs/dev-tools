@@ -3,8 +3,8 @@
 
   import { withProjection } from '@coriolis/coriolis-svelte'
 
-  import { filteredEventList } from '../../projections/filteredEventList'
-  import { eventListSelectedItem } from '../../projections/ui/eventListSelectedItem'
+  import { filteredEventList } from '../../../projections/filteredEventList'
+  import { eventListSelectedItem } from '../../../projections/ui/eventListSelectedItem'
 
   import EventListItem from './EventListItem.svelte'
   import EventDetails from './EventDetails.svelte'

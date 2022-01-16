@@ -5,7 +5,7 @@
 
   import EventProjectionCallDetails from './EventProjectionCallDetails.svelte'
 
-  import { selectedEventListItem } from '../../events/ui'
+  import { selectedEventListItem } from '../../../events/ui'
 
   export let details
 
