@@ -2,7 +2,7 @@
   import { withProjection } from '@coriolis/coriolis-svelte'
 
   import * as componentIndex from './views/componentIndex'
-  import DevToolsButton from './units/DevToolsButton.svelte'
+  import DevToolsButton from './units/DevToolsContainer/DevToolsButton.svelte'
 
   import { enabledViewName } from '../projections/ui/enabledViewName'
 

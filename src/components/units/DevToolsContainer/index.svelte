@@ -6,7 +6,7 @@
   import { panelWidth } from '../../../projections/ui/panelWidth'
   import { devtoolsClosed, panelWidthChanged } from '../../../events/ui'
 
-  import NavButton from '../NavButton.svelte'
+  import NavButton from './NavButton.svelte'
 
   import { subscribeEvent } from '../../../lib/dom/subscribeEvent'
   import { rafThrottle } from '../../../lib/browser/rafThrottle'
@@ -84,28 +84,28 @@
 
 <style lang="scss">
   .coriolis-dev-tools {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    box-sizing: border-box;
-    width: 500px;
     background: $color-primary-darker;
-    color: rgb(235, 235, 227);
-    padding: 3px 0 3px 6px;
+    color: $color-primary-lightest;
     display: flex;
-    flex-direction: column;
-    z-index: 1;
+    bottom: 0;
     box-shadow: 12px 0px 20px 10px black;
+    box-sizing: border-box;
+    flex-direction: column;
+    padding: 3px 0 3px 6px;
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 500px;
+    z-index: 1;
 
     &:before {
+      bottom: 0;
       content: '';
+      cursor: col-resize;
+      left: -5px;
       position: absolute;
       top: 0;
-      left: -5px;
-      bottom: 0;
       width: 10px;
-      cursor: col-resize;
     }
 
     > :global(*) {
@@ -115,62 +115,36 @@
 
     header {
       flex: 0 0 auto;
-      z-index: 1;
       overflow: hidden;
+      z-index: 1;
 
       .headerTop {
+        background: $color-primary-dark;
         margin: -3px 0 0 -6px;
         padding: 1px 10px 0 10px;
-        background: $color-primary-dark;
       }
 
       h2 {
         color: $color-primary-lightest;
+        font-size: 1.2em;
         margin: 5px 0 0 20px;
         padding: 0;
-        font-size: 1.2em;
       }
     }
 
     nav {
-      padding-top: 10px;
       margin-bottom: 10px;
       overflow-x: auto;
+      padding-top: 10px;
       white-space: nowrap;
-    }
 
-    :global(.nav-button) {
-      cursor: pointer;
-      margin: 1px 2px 0;
-      padding: 4px 8px 0;
-      background: $color-primary-lighter;
-      border-width: 1px 1px 0;
-      border-style: solid;
-      border-color: $color-primary-darker;
-      border-radius: 8px 8px 0 0;
-      color: $color-primary-darker;
-    }
-
-    :global(.nav-button:hover) {
-      background: $color-primary-lighter-hover;
-    }
-
-    :global(.nav-button[disabled]) {
-      border-width: 2px 1px 0;
-      border-color: $color-primary-lighter;
-      cursor: default;
-      background: $color-primary-darker;
-      color: $color-primary-lighter;
-      font-weight: bold;
-    }
-
-    :global(.coriolis-dev-tools-button-close) {
-      display: block;
-      position: absolute;
-      left: -41px;
-      bottom: 35px;
-      transform: rotate(-90deg);
-      font-size: .9em;
+      :global(.coriolis-dev-tools-button-close) {
+        bottom: 35px;
+        display: block;
+        left: -41px;
+        position: absolute;
+        transform: rotate(-90deg);
+      }
     }
   }
 </style>
