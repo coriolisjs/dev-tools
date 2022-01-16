@@ -2,7 +2,8 @@ import babel from 'rollup-plugin-babel'
 import svelte from 'rollup-plugin-svelte'
 import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
-import autoPreprocess from 'svelte-preprocess'
+import preprocess from 'svelte-preprocess'
+import postcssPresetEnv from 'postcss-preset-env'
 
 const production = !process.env.ROLLUP_WATCH
 
@@ -32,7 +33,11 @@ export default {
         dev: !production,
       },
 
-      preprocess: autoPreprocess(),
+      preprocess: preprocess({
+        postcss: {
+          plugins: [postcssPresetEnv()],
+        },
+      }),
       emitCss: false,
     }),
 
