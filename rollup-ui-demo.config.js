@@ -2,6 +2,7 @@ import babel from 'rollup-plugin-babel'
 import svelte from 'rollup-plugin-svelte'
 import resolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
+import livereload from 'rollup-plugin-livereload'
 import preprocess from 'svelte-preprocess'
 import postcssPresetEnv from 'postcss-preset-env'
 
@@ -45,6 +46,7 @@ export default {
         importee === 'svelte' || importee.startsWith('svelte/'),
     }),
     commonjs(),
+    !production && livereload('dist/ui-demo'),
   ],
   watch: {
     clearScreen: false,
