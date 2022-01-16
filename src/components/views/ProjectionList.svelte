@@ -4,6 +4,6 @@
 </script>
 
 <DevToolsContainer>
-  <h2 slot="title">Liste des projections</h2>
+  <svelte:fragment slot="title">Liste des projections</svelte:fragment>
   <ProjectionList />
 </DevToolsContainer>

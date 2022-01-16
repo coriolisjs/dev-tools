@@ -124,11 +124,10 @@
         background: $color-primary-dark;
       }
 
-      :global(h2) {
+      h2 {
         color: $color-primary-lightest;
         margin: 5px 0 0 20px;
         padding: 0;
-        /* text-align: center; */
         font-size: 1.2em;
       }
     }
@@ -183,7 +182,9 @@
 >
   <header>
     <div class="headerTop">
-      <slot name="title" />
+      <h2>
+        <slot name="title" />
+      </h2>
       <nav>
         <NavButton
           view={false}

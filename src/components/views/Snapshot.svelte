@@ -21,7 +21,7 @@
 </style>
 
 <DevToolsContainer>
-  <h2 slot="title">Snapshot</h2>
+  <svelte:fragment slot="title">Snapshot</svelte:fragment>
   <div class="content">
     <pre>
       {@html formatHighlight($snapshot$, {

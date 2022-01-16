@@ -4,6 +4,6 @@
 </script>
 
 <DevToolsContainer>
-  <h2 slot="title">Liste des effets</h2>
+  <svelte:fragment slot="title">Liste des effets</svelte:fragment>
   <EffectList />
 </DevToolsContainer>

@@ -4,6 +4,6 @@
 </script>
 
 <DevToolsContainer>
-  <h2 slot="title">Liste des commandes</h2>
+  <svelte:fragment slot="title">Liste des commandes</svelte:fragment>
   <CommandList />
 </DevToolsContainer>

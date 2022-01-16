@@ -5,7 +5,7 @@
 </script>
 
 <DevToolsContainer>
-  <h2 slot="title">Liste des events</h2>
+  <svelte:fragment slot="title">Liste des events</svelte:fragment>
   <div slot="tools">
     <EventListFilter />
   </div>

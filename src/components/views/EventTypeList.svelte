@@ -4,6 +4,6 @@
 </script>
 
 <DevToolsContainer>
-  <h2 slot="title">Liste des types d'events</h2>
+  <svelte:fragment slot="title">Liste des types d'events</svelte:fragment>
   <EventTypeList />
 </DevToolsContainer>
