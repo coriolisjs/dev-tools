@@ -1,5 +1,5 @@
 <script>
-  import DevToolsContainer from '../units/DevToolsContainer.svelte'
+  import DevToolsContainer from '../units/DevToolsContainer/index.svelte'
   import EventTypeList from '../units/EventTypeList.svelte'
 </script>
 

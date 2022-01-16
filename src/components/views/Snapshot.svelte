@@ -5,7 +5,7 @@
 
   import { currentStoreSnapshot } from '../../projections/currentStoreSnapshot'
 
-  import DevToolsContainer from '../units/DevToolsContainer.svelte'
+  import DevToolsContainer from '../units/DevToolsContainer/index.svelte'
 
   const snapshot$$ = withProjection(currentStoreSnapshot)
   let snapshot$ = snapshot$$.value

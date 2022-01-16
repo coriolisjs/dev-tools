@@ -1,6 +1,6 @@
 <script>
   import CommandList from '../units/CommandList.svelte'
-  import DevToolsContainer from '../units/DevToolsContainer.svelte'
+  import DevToolsContainer from '../units/DevToolsContainer/index.svelte'
 </script>
 
 <DevToolsContainer>

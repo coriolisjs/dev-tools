@@ -1,15 +1,15 @@
 <script>
   import { withProjection, createDispatch } from '@coriolis/coriolis-svelte'
 
-  import { viewList } from '../../projections/ui/viewList'
-  import { isDevtoolsOpen } from '../../projections/ui/isDevtoolsOpen'
-  import { panelWidth } from '../../projections/ui/panelWidth'
-  import { devtoolsClosed, panelWidthChanged } from '../../events/ui'
+  import { viewList } from '../../../projections/ui/viewList'
+  import { isDevtoolsOpen } from '../../../projections/ui/isDevtoolsOpen'
+  import { panelWidth } from '../../../projections/ui/panelWidth'
+  import { devtoolsClosed, panelWidthChanged } from '../../../events/ui'
 
-  import NavButton from './NavButton.svelte'
+  import NavButton from '../NavButton.svelte'
 
-  import { subscribeEvent } from '../../lib/dom/subscribeEvent'
-  import { rafThrottle } from '../../lib/browser/rafThrottle'
+  import { subscribeEvent } from '../../../lib/dom/subscribeEvent'
+  import { rafThrottle } from '../../../lib/browser/rafThrottle'
 
   const views$ = withProjection(viewList)
   const panelWidth$ = withProjection(panelWidth)

@@ -1,7 +1,7 @@
 <script>
   import EventList from '../units/EventList.svelte'
   import EventListFilter from '../units/EventListFilter.svelte'
-  import DevToolsContainer from '../units/DevToolsContainer.svelte'
+  import DevToolsContainer from '../units/DevToolsContainer/index.svelte'
 </script>
 
 <DevToolsContainer>
