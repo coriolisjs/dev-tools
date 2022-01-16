@@ -1,4 +1,5 @@
 import { open } from './open'
+import { openWithEventSelected } from './openWithEventSelected'
 
 export { open }
 
@@ -20,7 +21,7 @@ export const openWithTimeingTypeSelectedDelta0 = {
     'delta0',
 }
 
-export * from './openWithEventSelected'
+export { openWithEventSelected }
 
 export const closed = {
   enabledViewName: undefined,
