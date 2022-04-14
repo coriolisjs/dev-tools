@@ -1,34 +1,33 @@
-$chroma-primary: 40;
+$chroma-primary: 30;
+$hue-primary: 278;
 
-@function darkest($hue) {
-  @return lch(20% $chroma-primary $hue);
+@function darkest($hue, $chroma: $chroma-primary) {
+  @return lch(20% $chroma $hue);
 }
 
-@function darker($hue) {
-  @return lch(30% $chroma-primary $hue);
+@function darker($hue, $chroma: $chroma-primary) {
+  @return lch(30% $chroma $hue);
 }
 
-@function dark($hue) {
-  @return lch(40% $chroma-primary $hue);
+@function dark($hue, $chroma: $chroma-primary) {
+  @return lch(40% $chroma $hue);
 }
 
-@function medium($hue) {
-  @return lch(50% $chroma-primary $hue);
+@function medium($hue, $chroma: $chroma-primary) {
+  @return lch(50% $chroma $hue);
 }
 
-@function light($hue) {
-  @return lch(60% $chroma-primary $hue);
+@function light($hue, $chroma: $chroma-primary) {
+  @return lch(60% $chroma $hue);
 }
 
 @function lighter($hue, $chroma: $chroma-primary) {
   @return lch(70% $chroma $hue);
 }
 
-@function lightest($hue) {
-  @return lch(80% $chroma-primary $hue);
+@function lightest($hue, $chroma: $chroma-primary) {
+  @return lch(80% $chroma $hue);
 }
-
-$hue-primary: 278;
 
 $color-primary-darkest: darkest($hue-primary);
 $color-primary-darker: darker($hue-primary);
@@ -39,3 +38,5 @@ $color-primary-lighter: lighter($hue-primary);
 $color-primary-lightest: lightest($hue-primary);
 
 $color-primary-lighter-hover: lighter($hue-primary, $chroma-primary + 20);
+
+$color-primary-darkest-even: darkest($hue-primary, $chroma-primary + 15);

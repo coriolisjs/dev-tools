@@ -22,15 +22,15 @@
     margin: 0;
     padding: .5em;
     cursor: default;
-    background: rgba(black, .1);
+    background: $color-primary-darkest;
     line-height: 1.5em;
 
     &.isEven {
-      background: rgba(black, .2);
+      background: $color-primary-darkest-even;
     }
 
     &:hover {
-      background: rgba(white, .1);
+      background: $color-primary-dark;
     }
 
     &.isPastEvent {
@@ -60,7 +60,7 @@
     }
 
     &.isConnection {
-      background: #3f4271;
+      background: darker($hue-primary, $chroma-primary - 20);
       padding: .1em .5em 0;
 
       &.isSelected {

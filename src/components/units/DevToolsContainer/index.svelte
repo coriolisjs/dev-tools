@@ -85,12 +85,14 @@
 <style lang="scss">
   .coriolis-dev-tools {
     background: $color-primary-darker;
-    color: $color-primary-lightest;
-    display: flex;
     bottom: 0;
     box-shadow: 12px 0px 20px 10px black;
     box-sizing: border-box;
+    color: $color-primary-lightest;
+    display: flex;
     flex-direction: column;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
     padding: 3px 0 3px 6px;
     position: fixed;
     right: 0;
@@ -133,15 +135,15 @@
     }
 
     nav {
+      display: flex;
       margin-bottom: 10px;
-      overflow-x: auto;
       padding-top: 10px;
       white-space: nowrap;
 
       :global(.coriolis-dev-tools-button-close) {
         bottom: 35px;
         display: block;
-        left: -41px;
+        left: -36px;
         position: absolute;
         transform: rotate(-90deg);
       }
@@ -165,12 +167,13 @@
           projection={isDevtoolsOpen}
           buildEvent={devtoolsClosed}
           class="coriolis-dev-tools-button-close"
+          hint='Close Coriolis devtools'
         >
           Close
         </NavButton>
 
         {#each $views$ as view (view)}
-          <NavButton view={view.name}>{view.shortname || view.name}</NavButton>
+          <NavButton view={view.name} hint={view.longname || view.name}>{view.name}</NavButton>
         {/each}
       </nav>
     </div>

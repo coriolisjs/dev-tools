@@ -6,7 +6,8 @@
 </script>
 
 <style lang="scss">
-  :global(.nav-button.coriolis-dev-tools-button-open) {
+  // Adds "button" on selector to ensure this selector is more important than initial NavButton styles
+  :global(button.nav-button.coriolis-dev-tools-button-open) {
     border-color: $color-primary-lightest;
     border-radius: 90% 10%;
     border-style: outset;

@@ -7,6 +7,7 @@
   export let view
   export let projection = currentViewName
   export let buildEvent = viewChanged
+  export let hint
 
   const viewName$ = withProjection(projection)
 
@@ -22,6 +23,9 @@
     border-width: 1px 1px 0;
     color: $color-primary-darker;
     cursor: pointer;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
     margin: 1px 2px 0;
     padding: 4px 8px 0;
 
@@ -48,6 +52,7 @@
   class="nav-button {$$props.class || ''}"
   on:click={navAction}
   disabled={$viewName$ === view}
+  title={hint}
 >
   <slot />
 </button>
