@@ -28,18 +28,18 @@
   }
 
   const isInArea = (area, point) =>
-    point.x > area.left &&
-    point.x < area.right &&
-    point.y > area.top &&
-    point.y < area.bottom
+    point.clientX > area.left &&
+    point.clientX < area.right &&
+    point.clientY > area.top &&
+    point.clientY < area.bottom
 
-  const withCursorPoint = callback => event => callback({
-    x: event.clientX,
-    y: event.clientY,
-  })
+  const withoutDefaultBehavior = callback => event => {
+    event.preventDefault()
+    return callback(event)
+  }
 
   const resizeToCursor = (from, initialWidth, ranger) => to => {
-    const deltaX = to.x - from.x
+    const deltaX = to.clientX - from.clientX
     setPanelWidth(ranger(initialWidth - deltaX))
   }
 
@@ -55,13 +55,13 @@
   const handleMousedown = node => {
     const ifInGrabbingArea = ifInArea(() => grabbingArea(node))
 
-    return withCursorPoint(ifInGrabbingArea(from => {
+    return ifInGrabbingArea(withoutDefaultBehavior(from => {
       const initialWidth = node.getBoundingClientRect().width
       const ranger = createRanger(
         minWidth,
-        from.x + initialWidth - maxWidthMargin,
+        from.clientX + initialWidth - maxWidthMargin,
       )
-      const resizeNode = withCursorPoint(resizeToCursor(from, initialWidth, ranger))
+      const resizeNode = resizeToCursor(from, initialWidth, ranger)
 
       document.documentElement.style.cursor = 'col-resize'
 
