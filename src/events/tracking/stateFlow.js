@@ -8,25 +8,25 @@ export const stateFlowCreated = createEventBuilder(
   }),
 )
 
-export const accessedMemoizedReducedProjection = createEventBuilder(
-  'Coriolis devtools : ReducedProjection accessed with memoized event',
-  ({ reducedProjection, event }) => ({ reducedProjection, event }),
+export const accessedMemoizedReducedState = createEventBuilder(
+  'Coriolis devtools : ReducedState accessed with memoized event',
+  ({ reducedState, event }) => ({ reducedState, event }),
 )
 
-export const initialReducedProjectionCreated = createEventBuilder(
-  'Coriolis devtools : Initial reducedProjection created',
-  ({ stateFlowId, reducedProjection }) => ({
+export const initialReducedStateCreated = createEventBuilder(
+  'Coriolis devtools : Initial reducedState created',
+  ({ stateFlowId, reducedState }) => ({
     stateFlowId,
-    reducedProjection,
+    reducedState,
   }),
 )
 
-export const nextReducedProjectionCreated = createEventBuilder(
-  'Coriolis devtools : ReducedProjection created',
-  ({ parentReducedProjection, event, reducedProjection }) => ({
-    parentReducedProjection,
+export const nextReducedStateCreated = createEventBuilder(
+  'Coriolis devtools : ReducedState created',
+  ({ parentReducedState, event, reducedState }) => ({
+    parentReducedState,
     event,
-    reducedProjection,
+    reducedState,
   }),
 )
 

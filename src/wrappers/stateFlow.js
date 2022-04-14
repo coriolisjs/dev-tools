@@ -15,7 +15,7 @@ import {
   stateFlowCreated,
 } from '../events/tracking/stateFlow'
 
-import { wrapReducedProjection } from './reducedProjection'
+import { wrapReducedState } from './reducedState'
 
 let count = 0
 const getId = () => {
@@ -28,25 +28,23 @@ export const createTrackedStateFlowBuilder = () => {
 
   return {
     tracking$: trackingSubject,
-    createTrackedStateFlow: (initialReducedProjection, event$, skipUntil$) => {
+    createTrackedStateFlow: (initialReducedState, event$, skipUntil$) => {
       const stateFlowId = getId()
 
       const {
-        tracking$: reducedProjectionTracking$,
-        reducedProjection: trackedInitialReducedProjection,
-      } = wrapReducedProjection(initialReducedProjection)
+        tracking$: reducedStateTracking$,
+        reducedState: trackedInitialReducedState,
+      } = wrapReducedState(initialReducedState)
 
-      reducedProjectionTracking$.subscribe(trackingSubject)
+      reducedStateTracking$.subscribe(trackingSubject)
 
       const stateFlow = createStateFlow(
-        trackedInitialReducedProjection,
+        trackedInitialReducedState,
         event$,
         skipUntil$,
       )
 
-      trackingSubject.next(
-        stateFlowCreated({ stateFlow, initialReducedProjection }),
-      )
+      trackingSubject.next(stateFlowCreated({ stateFlow, initialReducedState }))
 
       const warnUnconnectedSubscriptions = stateFlow.stateless
         ? identity
