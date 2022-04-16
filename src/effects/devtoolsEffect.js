@@ -1,5 +1,4 @@
 import { Subject } from 'rxjs'
-import { snapshot } from '@coriolis/coriolis'
 
 import { storeAdded, storeEnded, storeEvent } from '../events/tracking/store'
 
@@ -9,7 +8,7 @@ export const createDevtoolsEffect = (storeName = 'unnamed') => {
     trackingSubject.next(
       storeAdded({
         storeName,
-        snapshot$: withProjection(snapshot),
+        snapshot$: withProjection('snapshot'),
       }),
     )
 
