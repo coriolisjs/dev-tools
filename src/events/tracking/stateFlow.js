@@ -38,3 +38,12 @@ export const requestedNextStateFlowValue = createEventBuilder(
   'Coriolis devtools : StateFlow next value created',
   ({ stateFlow, event, internal }) => ({ stateFlow, event, internal }),
 )
+
+export const getStateFlowCalled = createEventBuilder(
+  'Coriolis devtools : StateFlow has been accessed',
+  ({ storeId, projection, stateFlow }) => ({
+    storeId,
+    projection,
+    stateFlow,
+  }),
+)
