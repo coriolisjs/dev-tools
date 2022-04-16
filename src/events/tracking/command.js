@@ -2,9 +2,10 @@ import { createEventBuilder } from '@coriolis/coriolis'
 
 export const commandExecuted = createEventBuilder(
   'Coriolis devtools : detected a command execution',
-  ({ storeId, command }) => ({
+  ({ storeId, command, fromEffect }) => ({
     storeId,
     command,
+    fromEffect,
   }),
 )
 

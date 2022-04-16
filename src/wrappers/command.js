@@ -5,13 +5,13 @@ import { asObservable } from '../lib/rx/asObservable'
 
 import { commandCompleted, commandExecuted } from '../events/tracking/command'
 
-export const wrapCommand = (command) => {
+export const wrapCommand = (command, fromEffect) => {
   const trackingSubject = new Subject()
 
   return {
     tracking$: trackingSubject,
     command: (commandAPI) => {
-      trackingSubject.next(commandExecuted({ command }))
+      trackingSubject.next(commandExecuted({ command, fromEffect }))
 
       return asObservable(command(commandAPI)).pipe(
         tap({
@@ -19,7 +19,10 @@ export const wrapCommand = (command) => {
         }),
         map((event) => {
           if (typeof event === 'function') {
-            const { tracking$, command: subCommand } = wrapCommand(event)
+            const { tracking$, command: subCommand } = wrapCommand(
+              event,
+              fromEffect,
+            )
 
             // Here a simple subscription do the job BECAUSE the trackingSubject never completes.
             // If any change makes this subject complete, there would be a problem here when
@@ -35,6 +38,7 @@ export const wrapCommand = (command) => {
             meta: {
               ...meta,
               fromCommand: [...(meta.fromCommand || []), command],
+              fromEffect,
             },
           }
         }),
