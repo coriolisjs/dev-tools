@@ -5,7 +5,7 @@
   export let fixtures
 
   const mockedCoriolisStore = createMockedCoriolisStore(fixtures)
-  mockedCoriolisStore.selectFixture()
+  mockedCoriolisStore.selectFixture(localStorage.getItem('selectedFixture'))
 
   window.fixtureNames = mockedCoriolisStore.fixtureNames
   window.selectFixture = mockedCoriolisStore.selectFixture
@@ -15,7 +15,10 @@
     withProjection: mockedCoriolisStore.withProjection,
   })
 
-  const handleFixtureSelected = (event) => mockedCoriolisStore.selectFixture(event.target.value)
+  const handleFixtureSelected = (event) => {
+    localStorage.setItem('selectedFixture', event.target.value)
+    mockedCoriolisStore.selectFixture(event.target.value)
+  }
 </script>
 
 <select on:change={handleFixtureSelected}>
