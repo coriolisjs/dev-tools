@@ -1,6 +1,8 @@
 import { eventList } from './eventList'
 import { eventListWithEventSelected } from './eventListWithEventSelected'
 
+import { trackingsList } from './trackingsList'
+
 export { eventList }
 
 export const eventListWithTimingTypeSelectedTimestamp = {
@@ -22,6 +24,7 @@ export const eventListWithTimingTypeSelectedDelta0 = {
 }
 
 export { eventListWithEventSelected }
+export { trackingsList }
 
 export const closed = {
   enabledViewName: undefined,

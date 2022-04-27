@@ -23,4 +23,8 @@ export const views = [
     name: 'CommandList',
     longname: 'Liste des commandes',
   },
+  {
+    name: 'TrackingsList',
+    longname: 'Liste intégrale du tracking',
+  },
 ]
