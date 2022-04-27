@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs'
 import { effectAdded, effectRemoved } from '../events/tracking/effect'
 
-import { wrapCommand } from './command'
+import { createEventWrapper } from './event'
 
 const createTrackedAddEffect = (trackingSubject, effectAPI) => (effect) => {
   const { tracking$, effect: wrappedEffect } = wrapEffect(effect)
@@ -9,29 +9,12 @@ const createTrackedAddEffect = (trackingSubject, effectAPI) => (effect) => {
   return effectAPI.addEffect(wrappedEffect)
 }
 
-const createTrackedDispatch =
-  (trackingSubject, effectAPI, fromEffect) => (event) => {
-    if (typeof event === 'function') {
-      const { tracking$, command } = wrapCommand(event, fromEffect)
-
-      tracking$.subscribe(trackingSubject)
-
-      return effectAPI.dispatch(command)
-    }
-
-    const meta = event.meta || {}
-
-    return effectAPI.dispatch({
-      ...event,
-      meta: {
-        ...meta,
-        fromEffect,
-      },
-    })
-  }
-
 export const wrapEffect = (effect) => {
   const trackingSubject = new Subject()
+
+  const { tracking$: eventsTracking$, wrapEvent } = createEventWrapper(effect)
+
+  eventsTracking$.subscribe(trackingSubject)
 
   return {
     tracking$: trackingSubject,
@@ -41,7 +24,7 @@ export const wrapEffect = (effect) => {
       const removeEffect = effect({
         ...effectAPI,
         addEffect: createTrackedAddEffect(trackingSubject, effectAPI),
-        dispatch: createTrackedDispatch(trackingSubject, effectAPI, effect),
+        dispatch: (event) => effectAPI.dispatch(wrapEvent(event)),
 
         // withProjection is already tracked with trackedStateFlowFactory
 
