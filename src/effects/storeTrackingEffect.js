@@ -2,7 +2,7 @@ import { merge } from 'rxjs'
 import { map } from 'rxjs/operators'
 
 import { createDevtoolsEffect } from '../effects/devtoolsEffect'
-import { wrapEffect } from '../wrappers/effect'
+import { createEffectWrapper } from '../wrappers/effect'
 import { wrapErrorHandler } from '../wrappers/errorHandler'
 import { createTrackedStateFlowFactoryBuilder } from '../wrappers/stateFlowFactory'
 
@@ -15,6 +15,8 @@ export const createStoreTrackingEffect = (options) => {
   const { tracking$: storeTracking$, devtoolsEffect } = createDevtoolsEffect(
     options.storeName,
   )
+
+  const { tracking$: effectsTracking$, wrapEffect } = createEffectWrapper()
 
   const wrappedEffects = options.effects.map(wrapEffect)
 
@@ -32,7 +34,7 @@ export const createStoreTrackingEffect = (options) => {
         storeTracking$,
         stateFlowTracking$,
         errorTracking$,
-        ...wrappedEffects.map(({ tracking$ }) => tracking$),
+        effectsTracking$,
       ).pipe(
         map((event) => ({
           ...event,
@@ -46,7 +48,7 @@ export const createStoreTrackingEffect = (options) => {
     storeTrackingEffect,
     storeOptions: {
       ...options,
-      effects: [devtoolsEffect, ...wrappedEffects.map(({ effect }) => effect)],
+      effects: [devtoolsEffect, ...wrappedEffects],
       stateFlowFactoryBuilder: wrappedStateFlowFactoryBuilder,
       errorHandler: wrappedErrorHandler,
     },

@@ -3,27 +3,20 @@ import { effectAdded, effectRemoved } from '../events/tracking/effect'
 
 import { createEventWrapper } from './event'
 
-const createTrackedAddEffect = (trackingSubject, effectAPI) => (effect) => {
-  const { tracking$, effect: wrappedEffect } = wrapEffect(effect)
-  tracking$.subscribe(trackingSubject)
-  return effectAPI.addEffect(wrappedEffect)
-}
-
-export const wrapEffect = (effect) => {
+export const createEffectWrapper = () => {
   const trackingSubject = new Subject()
 
-  const { tracking$: eventsTracking$, wrapEvent } = createEventWrapper(effect)
+  const wrapEffect = (effect) => {
+    const { tracking$: eventsTracking$, wrapEvent } = createEventWrapper(effect)
 
-  eventsTracking$.subscribe(trackingSubject)
+    eventsTracking$.subscribe(trackingSubject)
 
-  return {
-    tracking$: trackingSubject,
-    effect: (effectAPI) => {
+    return (effectAPI) => {
       trackingSubject.next(effectAdded({ effect }))
 
       const removeEffect = effect({
         ...effectAPI,
-        addEffect: createTrackedAddEffect(trackingSubject, effectAPI),
+        addEffect: (effect) => effectAPI.addEffect(wrapEffect(effect)),
         dispatch: (event) => effectAPI.dispatch(wrapEvent(event)),
 
         // withProjection is already tracked with trackedStateFlowFactory
@@ -40,6 +33,11 @@ export const wrapEffect = (effect) => {
         removeEffect()
         trackingSubject.next(effectRemoved({ effect }))
       }
-    },
+    }
+  }
+
+  return {
+    tracking$: trackingSubject,
+    wrapEffect,
   }
 }
