@@ -1,7 +1,7 @@
 import { createEventBuilder } from '@coriolis/coriolis'
 
 export const effectAdded = createEventBuilder(
-  'Coriolis devtools : An effect has been added to a store',
+  '[Tracking] An effect has been added to a store',
   ({ storeId, effect }) => ({
     storeId,
     effect,
@@ -10,6 +10,6 @@ export const effectAdded = createEventBuilder(
 )
 
 export const effectRemoved = createEventBuilder(
-  `Coriolis devtools : An effect has been removed from it's store`,
+  `[Tracking] An effect has been removed from it's store`,
   ({ storeId, effect }) => ({ storeId, effect }),
 )

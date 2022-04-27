@@ -1,7 +1,7 @@
 import { createEventBuilder } from '@coriolis/coriolis'
 
 export const commandExecuted = createEventBuilder(
-  'Coriolis devtools : detected a command execution',
+  '[Tracking] command execution detected',
   ({ storeId, command, fromEffect }) => ({
     storeId,
     command,
@@ -10,7 +10,7 @@ export const commandExecuted = createEventBuilder(
 )
 
 export const commandCompleted = createEventBuilder(
-  'Coriolis devtools : detected a command completed',
+  '[Tracking] command completed detected',
   ({ storeId, command }) => ({
     storeId,
     command,

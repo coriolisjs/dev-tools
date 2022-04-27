@@ -1,12 +1,12 @@
 import { createEventBuilder } from '@coriolis/coriolis'
 
 export const storeAdded = createEventBuilder(
-  'Coriolis devtools : registered new event store',
+  '[Tracking] store registered',
   ({ storeId, storeName, snapshot$ }) => ({ storeId, storeName, snapshot$ }),
 )
 
 export const storeEvent = createEventBuilder(
-  'Coriolis devtools : detected an event',
+  '[Tracking] event detected',
   ({ storeId, event, isPastEvent }) => ({
     storeId,
     event,
@@ -15,11 +15,11 @@ export const storeEvent = createEventBuilder(
 )
 
 export const storeEnded = createEventBuilder(
-  'Coriolis devtools : detected an event store was ended',
+  '[Tracking] store ended',
   ({ storeId } = {}) => ({ storeId }),
 )
 
 export const storeError = createEventBuilder(
-  'Coriolis devtools : detected an event store global error',
+  '[Tracking] store global error',
   ({ storeId, error }) => ({ storeId, error }),
 )

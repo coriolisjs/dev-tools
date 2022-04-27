@@ -19,14 +19,11 @@ export const eventList = {
     EventListItem('event')(true),
     EventListItem('projectionInit')(),
   ],
-  'Last payload of type "Coriolis devtools : panel width changed"': 600,
+  'Last payload of type "[UI] panel width changed"': 600,
   isDevtoolsOpen: true,
-  'Last payload of type "Coriolis devtools : current view changed"':
-    'EventList',
-  'Last payload of type "Coriolis devtools : event list filter have been changed"':
-    undefined,
-  'Last payload of type "Coriolis devtools : item selected in event list"':
-    undefined,
-  'Last payload of type "Coriolis devtools : timing type for event display have been selected"':
+  'Last payload of type "[UI] current view changed"': 'EventList',
+  'Last payload of type "[UI] event list filter have been changed"': undefined,
+  'Last payload of type "[UI] event list item selected"': undefined,
+  'Last payload of type "[UI] event list timing type have been selected"':
     undefined,
 }

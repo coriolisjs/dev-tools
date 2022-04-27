@@ -2,7 +2,7 @@ import { eventList } from './eventList'
 
 export const eventListWithEventSelected = {
   ...eventList,
-  'Last payload of type "Coriolis devtools : item selected in event list"': {
+  'Last payload of type "[UI] event list item selected"': {
     type: 'event',
     payload: { any: 'data' },
     meta: {},

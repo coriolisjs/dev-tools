@@ -7,19 +7,19 @@ export { eventList }
 
 export const eventListWithTimingTypeSelectedTimestamp = {
   ...eventList,
-  'Last payload of type "Coriolis devtools : timing type for event display have been selected"':
+  'Last payload of type "[UI] event list timing type have been selected"':
     'timestamp',
 }
 
 export const eventListWithTimingTypeSelectedDate = {
   ...eventList,
-  'Last payload of type "Coriolis devtools : timing type for event display have been selected"':
+  'Last payload of type "[UI] event list timing type have been selected"':
     'date',
 }
 
 export const eventListWithTimingTypeSelectedDelta0 = {
   ...eventList,
-  'Last payload of type "Coriolis devtools : timing type for event display have been selected"':
+  'Last payload of type "[UI] event list timing type have been selected"':
     'delta0',
 }
 

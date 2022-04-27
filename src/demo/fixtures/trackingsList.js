@@ -19,8 +19,7 @@ export const trackingsList = {
     TrackingsListItem('trackingEvent')(),
     TrackingsListItem('trackingEvent')(),
   ],
-  'Last payload of type "Coriolis devtools : panel width changed"': 600,
+  'Last payload of type "[UI] panel width changed"': 600,
   isDevtoolsOpen: true,
-  'Last payload of type "Coriolis devtools : current view changed"':
-    'TrackingsList',
+  'Last payload of type "[UI] current view changed"': 'TrackingsList',
 }
