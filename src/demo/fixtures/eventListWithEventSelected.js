@@ -1,7 +1,7 @@
-import { open } from './open'
+import { eventList } from './eventList'
 
-export const openWithEventSelected = {
-  ...open,
+export const eventListWithEventSelected = {
+  ...eventList,
   'Last payload of type "Coriolis devtools : item selected in event list"': {
     type: 'event',
     payload: { any: 'data' },

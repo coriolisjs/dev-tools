@@ -2,7 +2,7 @@ import { views } from '../../components/views/index'
 
 import { EventListItem } from './units/eventListItem'
 
-export const open = {
+export const eventList = {
   enabledViewName: 'EventList',
   viewList: views,
   filteredEventList: [
