@@ -5,12 +5,12 @@ import { currentStoreId } from './currentStoreId'
 
 import { projectionListItem } from '../models/projectionListItem'
 
-import { withProjectionCalled } from '../events/tracking/effect'
+import { stateFlowCreated } from '../events/tracking/stateFlow'
 import { unshift } from '../lib/array/unshift'
 
 const reduceProjectionList = (projectionList = [], event) => {
   switch (event.type) {
-    case withProjectionCalled.toString():
+    case stateFlowCreated.toString():
       return unshift(
         projectionList,
         projectionListItem({
@@ -27,7 +27,7 @@ const reduceProjectionList = (projectionList = [], event) => {
 
 export const fullProjectionsIndex = ({ useState, useEvent }) => (
   useState({}),
-  useEvent(withProjectionCalled),
+  useEvent(stateFlowCreated),
   (lists, event) =>
     set(
       lists,

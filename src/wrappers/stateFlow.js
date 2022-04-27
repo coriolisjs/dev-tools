@@ -15,8 +15,6 @@ import {
   stateFlowCreated,
 } from '../events/tracking/stateFlow'
 
-import { wrapReducedState } from './reducedState'
-
 let count = 0
 const getId = () => {
   count += 1
@@ -28,108 +26,104 @@ export const createTrackedStateFlowBuilder = () => {
 
   return {
     tracking$: trackingSubject,
-    createTrackedStateFlow: (initialReducedState, event$, skipUntil$) => {
-      const stateFlowId = getId()
+    createTrackedStateFlow:
+      (event$, skipUntil$, getStateFlow, getStateFlowList) =>
+      (...args) => {
+        const stateFlowId = getId()
 
-      const {
-        tracking$: reducedStateTracking$,
-        reducedState: trackedInitialReducedState,
-      } = wrapReducedState(initialReducedState)
+        const stateFlow = createStateFlow(
+          event$,
+          skipUntil$,
+          getStateFlow,
+          getStateFlowList,
+        )(...args)
 
-      reducedStateTracking$.subscribe(trackingSubject)
+        const projection = args[0] === 'reducer' ? args.slice(1) : args[0]
 
-      const stateFlow = createStateFlow(
-        trackedInitialReducedState,
-        event$,
-        skipUntil$,
-      )
+        trackingSubject.next(stateFlowCreated({ stateFlow, projection }))
 
-      trackingSubject.next(stateFlowCreated({ stateFlow, initialReducedState }))
+        const warnUnconnectedSubscriptions = stateFlow.stateless
+          ? identity
+          : trackSubscriptions(() => {
+              if (stateFlow.isConnected()) {
+                return
+              }
+              console.warn(
+                `Subscribing on projection "${stateFlow.name}" while it is not connected`,
+              )
+            })
 
-      const warnUnconnectedSubscriptions = stateFlow.stateless
-        ? identity
-        : trackSubscriptions(() => {
-            if (stateFlow.isConnected()) {
-              return
+        const trackedStateFlow = stateFlow.state$.pipe(
+          trackSubscriptions(
+            () => trackingSubject.next(subscribedStateFlow({ stateFlow })),
+            () => trackingSubject.next(unsubscribedStateFlow({ stateFlow })),
+          ),
+          warnUnconnectedSubscriptions,
+        )
+
+        trackedStateFlow.connect = !stateFlow.stateless
+          ? () => {
+              trackingSubject.next(connectedStateFlow({ stateFlow }))
+
+              // original connect method must be called because it does not only do a subscription
+              const disconnect = stateFlow.state$.connect()
+
+              // TODO: maybe we should not do this subscription....
+              // const unsub = simpleUnsub(trackedStateFlow.subscribe())
+
+              return () => {
+                trackingSubject.next(disconnectedStateFlow({ stateFlow }))
+                return disconnect()
+                // return unsub()
+              }
             }
-            console.warn(
-              `Subscribing on projection "${stateFlow.name}" while it is not connected`,
-            )
-          })
-
-      const trackedStateFlow = stateFlow.external.pipe(
-        trackSubscriptions(
-          () => trackingSubject.next(subscribedStateFlow({ stateFlow })),
-          () => trackingSubject.next(unsubscribedStateFlow({ stateFlow })),
-        ),
-        warnUnconnectedSubscriptions,
-      )
-
-      trackedStateFlow.connect = !stateFlow.stateless
-        ? () => {
-            trackingSubject.next(connectedStateFlow({ stateFlow }))
-
-            // original connect method must be called because it does not only do a subscription
-            const disconnect = stateFlow.external.connect()
-
-            // TODO: maybe we should not do this subscription....
-            // const unsub = simpleUnsub(trackedStateFlow.subscribe())
-
-            return () => {
-              trackingSubject.next(disconnectedStateFlow({ stateFlow }))
-              return disconnect()
-              // return unsub()
+          : () => {
+              console.warn(
+                `Connecting a stateless projection (${
+                  stateFlow.name || 'unnamed'
+                }) is useless.\nMaybe you intended to connect a statefull projection this one depends on ?`,
+              )
+              return () => {}
             }
-          }
-        : () => {
-            console.warn(
-              `Connecting a stateless projection (${
-                stateFlow.name || 'unnamed'
-              }) is useless.\nMaybe you intended to connect a statefull projection this one depends on ?`,
-            )
-            return () => {}
-          }
 
-      const getValue = stateFlow.internal.getValue
+        const getValue = stateFlow.getValue
 
-      const internalGetValueTracked = () => {
-        trackingSubject.next(
-          accessedStateFlowValue({ stateFlow, internal: true }),
-        )
-        return getValue()
-      }
+        const internalGetValueTracked = () => {
+          trackingSubject.next(
+            accessedStateFlowValue({ stateFlow, internal: true }),
+          )
+          return getValue()
+        }
 
-      const externalGetValueTracked = () => {
-        trackingSubject.next(
-          accessedStateFlowValue({ stateFlow, internal: false }),
-        )
-        return getValue()
-      }
+        const externalGetValueTracked = () => {
+          trackingSubject.next(
+            accessedStateFlowValue({ stateFlow, internal: false }),
+          )
+          return getValue()
+        }
 
-      const internalGetNextValueTracked = (event) => {
-        trackingSubject.next(
-          requestedNextStateFlowValue({ stateFlow, event, internal: true }),
-        )
+        const internalGetNextValueTracked = (event) => {
+          trackingSubject.next(
+            requestedNextStateFlowValue({ stateFlow, event, internal: true }),
+          )
 
-        return stateFlow.internal.getNextValue(event)
-      }
+          return stateFlow.getNextValue(event)
+        }
 
-      setValueGetter(trackedStateFlow, externalGetValueTracked)
+        setValueGetter(trackedStateFlow, externalGetValueTracked)
 
-      // TODO: this is probably not necessary.... should be removed when checked it's not used
-      trackedStateFlow.id = stateFlowId
-      trackedStateFlow.name = stateFlow.name
+        // TODO: this is probably not necessary.... should be removed when checked it's not used
+        trackedStateFlow.id = stateFlowId
+        trackedStateFlow.name = stateFlow.name
 
-      return {
-        ...stateFlow,
-        internal: {
+        return {
+          ...stateFlow,
           getValue: internalGetValueTracked,
           getNextValue: internalGetNextValueTracked,
-        },
-        external: trackedStateFlow,
-        untracked: stateFlow,
-        id: stateFlowId,
-      }
-    },
+          state$: trackedStateFlow,
+          untracked: stateFlow,
+          id: stateFlowId,
+        }
+      },
   }
 }

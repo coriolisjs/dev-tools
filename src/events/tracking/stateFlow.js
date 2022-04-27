@@ -2,31 +2,10 @@ import { createEventBuilder } from '@coriolis/coriolis'
 
 export const stateFlowCreated = createEventBuilder(
   'Coriolis devtools : StateFlow has been created',
-  ({ storeId, stateFlow }) => ({
+  ({ storeId, stateFlow, projection }) => ({
     storeId,
     stateFlow,
-  }),
-)
-
-export const accessedMemoizedReducedState = createEventBuilder(
-  'Coriolis devtools : ReducedState accessed with memoized event',
-  ({ reducedState, event }) => ({ reducedState, event }),
-)
-
-export const initialReducedStateCreated = createEventBuilder(
-  'Coriolis devtools : Initial reducedState created',
-  ({ stateFlowId, reducedState }) => ({
-    stateFlowId,
-    reducedState,
-  }),
-)
-
-export const nextReducedStateCreated = createEventBuilder(
-  'Coriolis devtools : ReducedState created',
-  ({ parentReducedState, event, reducedState }) => ({
-    parentReducedState,
-    event,
-    reducedState,
+    projection,
   }),
 )
 
