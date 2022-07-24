@@ -25,7 +25,7 @@ export const eventListItem = ({
   isCommand: typeof payload === 'function',
 
   date: new Date(timestamp).toLocaleString(),
-  timestamp: timestamp,
+  timestamp,
   deltaN: humanReadableTimeDelta(
     getTimestampDelta(timestamp, get(previousListItem, 'timestamp')),
   ),

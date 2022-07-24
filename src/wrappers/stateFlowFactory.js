@@ -31,7 +31,7 @@ export const createTrackedStateFlowFactoryBuilder = (
         trackingSubject.next(
           getStateFlowCalled({
             projection: args,
-            stateFlow: stateFlow,
+            stateFlow,
           }),
         )
 

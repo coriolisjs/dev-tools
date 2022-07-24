@@ -1,7 +1,7 @@
-import babel from 'rollup-plugin-babel'
+import { babel } from '@rollup/plugin-babel'
 import svelte from 'rollup-plugin-svelte'
-import resolve from 'rollup-plugin-node-resolve'
-import commonjs from 'rollup-plugin-commonjs'
+import resolve from '@rollup/plugin-node-resolve'
+import commonjs from '@rollup/plugin-commonjs'
 import preprocess from 'svelte-preprocess'
 import postcssPresetEnv from 'postcss-preset-env'
 
@@ -26,6 +26,7 @@ export default {
   plugins: [
     babel({
       exclude: 'node_modules/**',
+      babelHelpers: 'bundled',
     }),
     svelte({
       compilerOptions: {
